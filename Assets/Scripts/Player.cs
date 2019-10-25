@@ -31,6 +31,8 @@ public class Player : MonoBehaviour
     private GameObject _shieldPrefab;
     [SerializeField]
     private int _shieldLaserHitEndurance = 3;
+    [SerializeField]
+    private int _ammoCount = 15;
     private int _score;
     private int _killCount = 0;
     private UIManager _ui;
@@ -96,16 +98,20 @@ public class Player : MonoBehaviour
 
         _minimumSpeed = _speed;
 
+        _ui.ShowAmmoCount(_ammoCount);
+
     }
 
     void Update()
     {
         CalculateMovement();
 
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire)
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire && _ammoCount>0)
         {
             Fire();
             _nextFire = Time.time + _fireRate;
+            AmmoManagement();
+           
         }
 
         if (Input.GetKey(KeyCode.LeftShift))
@@ -120,10 +126,7 @@ public class Player : MonoBehaviour
             {
                 _speed = _minimumSpeed;
             }
-            
         }
-
-
     }
 
     private void CalculateMovement()
@@ -172,6 +175,7 @@ public class Player : MonoBehaviour
     
     private void Fire()
     {
+        
         if (_isTripleShotEnabled == false)
         {
             FireLaser();
@@ -194,6 +198,25 @@ public class Player : MonoBehaviour
     {
         var offset = new Vector3(0, 1, 0);
         Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+    }
+
+
+    public void AmmoManagement()
+    {
+        _ammoCount--;
+        _ui.ShowAmmoCount(_ammoCount);
+
+        if (_ammoCount <= 5 && _ui.IsAmmoCoroutineActive == false)
+        {
+            _ui.StartCoroutine("AmmoCountFlickering");
+        }
+        else if (_ammoCount > 5 && _ui.IsAmmoCoroutineActive == true)
+        {
+            
+            _ui.StopCoroutine("AmmoCountFlickering");
+            _ui.IsAmmoCoroutineActive = false;
+            _ui.GetComponent<UIManager>().EnableAmmoText();  //In case Coroutine stops while Text is disabled
+        }
     }
 
     public void Damage(String sourceOfDamage)

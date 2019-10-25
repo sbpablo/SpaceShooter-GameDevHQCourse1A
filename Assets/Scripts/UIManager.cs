@@ -17,13 +17,17 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text _restartText;
     [SerializeField]
+    private Text _ammoText;
+    [SerializeField]
     private GameManager _gameManager;
-
-
+    [SerializeField]
+    private bool _ammoAlert;
+    public bool IsAmmoCoroutineActive  { get; set; } 
 
 
     void Start()
     {
+        _ammoAlert = true;
         _score.text = "Score: " + 0;
         _livesUIImage.sprite = _livesSprites[3];
         _gameOverText.gameObject.SetActive(false);
@@ -37,12 +41,18 @@ public class UIManager : MonoBehaviour
         {
             throw new ArgumentNullException("Game Manager", "NULL, cannot find GameManager");
         }
+
     }
 
     public void ShowScore (int score)
     {
         _score.text = "Score: " + score;
         
+    }
+
+    public void ShowAmmoCount (int ammo)
+    {
+        _ammoText.text = $"Ammo: {ammo}";
     }
 
     public void SetLivesImage(int lives)
@@ -81,8 +91,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator GameOverFlickering()
     {
-        
-
+       
        while (true)
         {
             _gameOverText.gameObject.SetActive(!_gameOverText.gameObject.activeSelf);
@@ -93,7 +102,27 @@ public class UIManager : MonoBehaviour
     }
 
       
-       
+    IEnumerator AmmoCountFlickering()
+    {
+
+        IsAmmoCoroutineActive = true;
+        
+        while (true)
+        {
+            _ammoText.gameObject.SetActive(!_ammoText.gameObject.activeSelf);
+            yield return new  WaitForSeconds(0.5f);
+            
+        }
+
+    }
+
+
+  
+    public void EnableAmmoText()
+    {
+        _ammoText.gameObject.SetActive(true);
+    }       
+
  }
 
 
