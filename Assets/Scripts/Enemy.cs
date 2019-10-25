@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _enemylaserPrefab;
     private int testfield;
+    private int testfield2;
     
     void Start()
     {
