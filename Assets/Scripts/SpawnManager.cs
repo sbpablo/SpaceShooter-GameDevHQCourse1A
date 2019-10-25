@@ -19,6 +19,8 @@ public class SpawnManager : MonoBehaviour
     private float _powerUpSpawnTime=7.0f;
     private bool _stopSpawning = false;
     private Boundary _boundary;
+    private Player _player;
+    
     
     void Start()
     {
@@ -31,9 +33,18 @@ public class SpawnManager : MonoBehaviour
             throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
         }
 
+        try
+        {
+            _player = GameObject.Find("Player").GetComponent<Player>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("Player", "NULL, cannot find Player");
+        }
 
-       // When Asteroid is destroyed, the spawn beggins.
-       
+
+        // When Asteroid is destroyed, the spawn beggins.
+
     }
     public void StartSpawning()
     {
@@ -66,8 +77,18 @@ public class SpawnManager : MonoBehaviour
             var Ypos = _boundary.GetTopCorner().y;
 
 
-            var randomIndex = UnityEngine.Random.Range(0, _powerUps.Length);
-            var powerUpInstance = Instantiate(_powerUps[randomIndex], new Vector3(randomXpos, Ypos, 0), Quaternion.identity);
+            int randomIndex;
+            
+            if (_player.GetAmmoCount() == 0) 
+            { 
+                randomIndex = 3; //Ammo PowerUp
+            }
+            else 
+            {
+               randomIndex = UnityEngine.Random.Range(0, _powerUps.Length);
+            }
+
+                var powerUpInstance = Instantiate(_powerUps[randomIndex], new Vector3(randomXpos, Ypos, 0), Quaternion.identity);
 
 
             /* NO TIENE SENTIDO HACER SWITCH, mucho mejor lo de arriba con lista (array) !!!
@@ -91,6 +112,8 @@ public class SpawnManager : MonoBehaviour
             }
 
             */
+
+
 
             if (powerUpInstance!= null)
             {

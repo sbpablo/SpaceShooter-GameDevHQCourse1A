@@ -21,13 +21,13 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameManager _gameManager;
     [SerializeField]
-    private bool _ammoAlert;
+    
     public bool IsAmmoCoroutineActive  { get; set; } 
 
 
     void Start()
     {
-        _ammoAlert = true;
+     
         _score.text = "Score: " + 0;
         _livesUIImage.sprite = _livesSprites[3];
         _gameOverText.gameObject.SetActive(false);
@@ -123,6 +123,13 @@ public class UIManager : MonoBehaviour
         _ammoText.gameObject.SetActive(true);
     }       
 
+
+    public void StopAmmoCoroutineSecuence()
+    {
+        StopCoroutine("AmmoCountFlickering");
+        IsAmmoCoroutineActive = false;
+       GetComponent<UIManager>().EnableAmmoText();  //In case Coroutine stops while Text is disabled
+    } 
  }
 
 

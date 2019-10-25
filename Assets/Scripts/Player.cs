@@ -32,7 +32,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int _shieldLaserHitEndurance = 3;
     [SerializeField]
-    private int _ammoCount = 15;
+    private int _maxAmmoCount = 15;
+    [SerializeField]
+    private int _ammoCount;
     private int _score;
     private int _killCount = 0;
     private UIManager _ui;
@@ -98,6 +100,7 @@ public class Player : MonoBehaviour
 
         _minimumSpeed = _speed;
 
+        _ammoCount = _maxAmmoCount;
         _ui.ShowAmmoCount(_ammoCount);
 
     }
@@ -210,14 +213,13 @@ public class Player : MonoBehaviour
         {
             _ui.StartCoroutine("AmmoCountFlickering");
         }
-        else if (_ammoCount > 5 && _ui.IsAmmoCoroutineActive == true)
+        else if (_ammoCount > 5 && _ui.IsAmmoCoroutineActive == true)  // For inspector debugging.  AmmoPowerUP stops Routine.
         {
-            
-            _ui.StopCoroutine("AmmoCountFlickering");
-            _ui.IsAmmoCoroutineActive = false;
-            _ui.GetComponent<UIManager>().EnableAmmoText();  //In case Coroutine stops while Text is disabled
+            _ui.StopAmmoCoroutineSecuence();
         }
+
     }
+
 
     public void Damage(String sourceOfDamage)
     {
@@ -339,6 +341,13 @@ public class Player : MonoBehaviour
         _shieldPrefab.SetActive(false);
     }
 
+    public void OnAmmoPowerUpCollection()
+    {
+        _ammoCount = _maxAmmoCount;
+        _ui.ShowAmmoCount(_ammoCount);
+        _ui.StopAmmoCoroutineSecuence();
+    }
+
     public void SetScore(int score)
     {
         _killCount += 1;
@@ -348,6 +357,11 @@ public class Player : MonoBehaviour
     public int GetScore()
     {
         return _score;
+    }
+
+    public int GetAmmoCount()
+    {
+        return _ammoCount;
     }
 
 }
