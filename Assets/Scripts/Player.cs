@@ -8,8 +8,11 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 10;
+    private float _minimumSpeed;
     [SerializeField]
     private float _speedMultiplier = 2;
+    [SerializeField]
+    private float _speedIncreasedRate = 2f;
     [SerializeField]
     private GameObject _laserPrefab;
     [SerializeField]
@@ -88,6 +91,7 @@ public class Player : MonoBehaviour
             throw new ArgumentNullException("AudioManager or Explosion Sound", "NULL, cannot find Audio Manager/ Clip");
         }
 
+        _minimumSpeed = _speed;
 
     }
 
@@ -100,6 +104,18 @@ public class Player : MonoBehaviour
             Fire();
             _nextFire = Time.time + _fireRate;
         }
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            _speed = _minimumSpeed * _speedIncreasedRate;
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            _speed = _minimumSpeed;
+        }
+
+
     }
 
     private void CalculateMovement()
@@ -145,8 +161,7 @@ public class Player : MonoBehaviour
         transform.position = restrectedPos;
     }
 
-
-
+    
     private void Fire()
     {
         if (_isTripleShotEnabled == false)
