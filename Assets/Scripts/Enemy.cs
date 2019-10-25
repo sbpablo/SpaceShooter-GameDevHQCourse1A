@@ -16,8 +16,7 @@ public class Enemy : MonoBehaviour
     private AudioSource _explosionAudioSource;
     [SerializeField]
     private GameObject _enemylaserPrefab;
-    private int testfield;
-    private int testfield2;
+    
     
     void Start()
     {
