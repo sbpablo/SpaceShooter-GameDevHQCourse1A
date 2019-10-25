@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     private GameObject _tripleShotPrefab;
     private bool _isTripleShotEnabled;
     private bool _isShieldEnabled;
+    private bool _isSpeedEnabled;
     [SerializeField]
     private float _fireRate = 0.5f;
     private float _nextFire = 0.0f;
@@ -112,7 +113,12 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            _speed = _minimumSpeed;
+           
+            if (_isSpeedEnabled == false)
+            {
+                _speed = _minimumSpeed;
+            }
+            
         }
 
 
@@ -261,6 +267,7 @@ public class Player : MonoBehaviour
 
     public void OnSpeedPowerUpCollection(float duration)
     {
+        _isSpeedEnabled = true;
         _speed *= _speedMultiplier;
         StartCoroutine(SpeedCoolDownRoutine(duration));
 
@@ -269,6 +276,7 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         _speed /= _speedMultiplier;
+        _isSpeedEnabled = false;
     }
     public void OnShieldPowerUpCollection (float duration)
     {
