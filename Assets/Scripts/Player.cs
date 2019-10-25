@@ -29,6 +29,8 @@ public class Player : MonoBehaviour
     private SpawnManager _spawnManager;
     [SerializeField]
     private GameObject _shieldPrefab;
+    [SerializeField]
+    private int _shieldLaserHitEndurance = 3;
     private int _score;
     private int _killCount = 0;
     private UIManager _ui;
@@ -243,11 +245,32 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if (sourceOfDamage == "Enemy")
+            if (sourceOfDamage == "Enemy")   //The enemy ship destroys the shield completely.
             {
                 StopCoroutine("ShieldCoolDownRoutine");
                 _isShieldEnabled = false;
                 _shieldPrefab.SetActive(false);
+            }
+            else // its the Enemy's Laser
+            {
+                _shieldLaserHitEndurance--;
+                
+                switch (_shieldLaserHitEndurance)  
+                {
+                    case 2:
+                        _shieldPrefab.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.66f);
+                        break;
+                    case 1:
+                        _shieldPrefab.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.33f);
+                        break;
+                    case 0:
+                        StopCoroutine("ShieldCoolDownRoutine");
+                        _isShieldEnabled = false;
+                        _shieldPrefab.SetActive(false);
+                        break;
+
+                }
+
             }
         }
     }
