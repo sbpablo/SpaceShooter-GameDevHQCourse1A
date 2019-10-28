@@ -576,7 +576,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 381, y: 201.5}
+  m_AnchoredPosition: {x: 5, y: -27}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &551692680
@@ -693,7 +693,6 @@ MonoBehaviour:
   _restartText: {fileID: 1581174367}
   _ammoText: {fileID: 452401390}
   _gameManager: {fileID: 1025498036}
-  _ammoAlert: 0
 --- !u!4 &606759179
 Transform:
   m_ObjectHideFlags: 0
@@ -1909,6 +1908,7 @@ MonoBehaviour:
   - {fileID: 1928094489946154931, guid: 2eb1c1b8c0b454c4a99b3c16473e2159, type: 3}
   - {fileID: 8828219780772601439, guid: 951256a24ccaf2f458272847e383079d, type: 3}
   - {fileID: 4332223543582043126, guid: 50153398121f42f4aa399c20c780b98f, type: 3}
+  - {fileID: 5458880835173129625, guid: acb5a852d7f7d214391d59470750f0ef, type: 3}
   _powerUpContainer: {fileID: 2123264297}
   _powerUpSpawnTime: 7
 --- !u!4 &2014493858

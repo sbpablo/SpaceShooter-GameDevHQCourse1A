@@ -8,7 +8,8 @@ public enum PowerUpType
     TripleShot,
     Speed,
     Shield,
-    Ammo
+    Ammo,
+    Life
 }
 
 public class PowerUp : MonoBehaviour
@@ -90,7 +91,11 @@ public class PowerUp : MonoBehaviour
                     case 3:
                         player.OnAmmoPowerUpCollection();
                         break;
-                        
+                    case 4:
+                        player.OnLifePowerUpCollection();
+                        break;
+
+
                 }
 
                

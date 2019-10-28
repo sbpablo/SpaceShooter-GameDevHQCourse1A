@@ -348,6 +348,27 @@ public class Player : MonoBehaviour
         _ui.StopAmmoCoroutineSecuence();
     }
 
+    public void OnLifePowerUpCollection()
+    {
+        
+        if (_lives <3)
+        {
+            _lives++;
+            _ui.SetLivesImage(_lives);
+
+            if (_leftEngine.activeSelf == true)
+            {
+                _leftEngine.SetActive(false);
+            }
+            else
+            {
+                _rightEngine.SetActive(false);
+            }
+        }
+       
+    }
+
+
     public void SetScore(int score)
     {
         _killCount += 1;
