@@ -44,6 +44,7 @@ public class Player : MonoBehaviour
     private GameObject _explosionPrefab;
     private AudioSource _laserAudioSource;
     private AudioSource _explosionAudioSource;
+    private CameraShake _cameraShake;
     
     void Awake()
     {
@@ -96,6 +97,15 @@ public class Player : MonoBehaviour
         catch (Exception)
         {
             throw new ArgumentNullException("AudioManager or Explosion Sound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
+        try
+        {
+            _cameraShake = GameObject.FindWithTag("MainCamera").GetComponent<CameraShake>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("MainCamera", "NULL, cannot find MainCamera");
         }
 
         _minimumSpeed = _speed;
@@ -225,6 +235,8 @@ public class Player : MonoBehaviour
     {
         if (_isShieldEnabled == false)
         {
+
+            _cameraShake.Shake();
             _lives -= 1;
             _ui.SetLivesImage(_lives);
 
