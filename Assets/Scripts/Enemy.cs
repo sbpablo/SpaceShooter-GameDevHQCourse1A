@@ -16,8 +16,9 @@ public class Enemy : MonoBehaviour
     private AudioSource _explosionAudioSource;
     [SerializeField]
     private GameObject _enemylaserPrefab;
-    
-    
+    public bool IsbeingTargeted { get; set; }
+
+
     void Start()
     {
         try
@@ -112,7 +113,7 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter2D (Collider2D other)
     {
-        if (other.tag == "Laser")
+        if (other.tag == "Laser" || other.tag=="Missile")
         {
             Destroy(other.gameObject);
 

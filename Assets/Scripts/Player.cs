@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     private bool _isTripleShotEnabled;
     private bool _isShieldEnabled;
     private bool _isSpeedEnabled;
+    private bool _areMissilesEnabled;
     [SerializeField]
     private float _fireRate = 0.5f;
     private float _nextFire = 0.0f;
@@ -44,7 +45,10 @@ public class Player : MonoBehaviour
     private GameObject _explosionPrefab;
     private AudioSource _laserAudioSource;
     private AudioSource _explosionAudioSource;
+    private AudioSource _missileAudioSource;
     private CameraShake _cameraShake;
+    [SerializeField]
+    private GameObject _missilePrefab;
     
     void Awake()
     {
@@ -88,6 +92,16 @@ public class Player : MonoBehaviour
         catch (Exception)
         {
             throw new ArgumentNullException("AudioManager or_laserSound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
+
+        try
+        {
+            _missileAudioSource = GameObject.Find("AudioManager").transform.Find("MissileSound").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or_missileSound", "NULL, cannot find Audio Manager/ Clip");
         }
 
         try
@@ -194,17 +208,29 @@ public class Player : MonoBehaviour
     
     private void Fire()
     {
-        
-        if (_isTripleShotEnabled == false)
+
+        if (_isTripleShotEnabled == false && _areMissilesEnabled == false)
         {
             FireLaser();
-        }
-        else
+            _laserAudioSource.Play();
+
+        } else if (_isTripleShotEnabled==true)
         {
             FireTripleShot();
+            _laserAudioSource.Play();
+
+        } else
+        
+        {
+            FireMissiles();
+            _missileAudioSource.Play();
+
+
         }
 
-        _laserAudioSource.Play();
+        
+
+        
     }
 
     private void FireLaser()
@@ -218,6 +244,12 @@ public class Player : MonoBehaviour
         var offset = new Vector3(0, 1, 0);
         Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
     }
+
+    private void FireMissiles()
+    {
+        Instantiate(_missilePrefab, transform.position, Quaternion.identity);
+    }
+
 
 
     public void AmmoManagement()
@@ -321,6 +353,7 @@ public class Player : MonoBehaviour
     public void OnTripleShotPowerUpCollection(float duration)
     {
         _isTripleShotEnabled = true;
+        _areMissilesEnabled = false;
         StartCoroutine(TripleShotCoolDownRoutine(duration));
 
     }
@@ -384,6 +417,19 @@ public class Player : MonoBehaviour
             }
         }
        
+    }
+
+    public void OnMissilePowerUpCollection(float duration)
+    {
+        _areMissilesEnabled = true;
+        _isTripleShotEnabled = false;
+        StartCoroutine(MissilesCoolDownRoutine(duration));
+    }
+
+    IEnumerator MissilesCoolDownRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        _areMissilesEnabled = false;
     }
 
 

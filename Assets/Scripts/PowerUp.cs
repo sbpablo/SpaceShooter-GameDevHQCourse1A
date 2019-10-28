@@ -9,7 +9,8 @@ public enum PowerUpType
     Speed,
     Shield,
     Ammo,
-    Life
+    Life,
+    Missile
 }
 
 public class PowerUp : MonoBehaviour
@@ -93,6 +94,9 @@ public class PowerUp : MonoBehaviour
                         break;
                     case 4:
                         player.OnLifePowerUpCollection();
+                        break;
+                    case 5:
+                        player.OnMissilePowerUpCollection(_duration);
                         break;
 
 

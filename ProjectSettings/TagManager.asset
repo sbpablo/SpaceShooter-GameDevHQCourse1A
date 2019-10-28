@@ -9,6 +9,7 @@ TagManager:
   - TripleShotPowerUp
   - Asteroid
   - EnemyLaser
+  - Missile
   layers:
   - Default
   - TransparentFX
