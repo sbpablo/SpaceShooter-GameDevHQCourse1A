@@ -127,19 +127,25 @@ public class Player : MonoBehaviour
            
         }
 
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            _speed = _minimumSpeed * _speedIncreasedRate;
-        }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (!_isSpeedEnabled)
         {
-           
-            if (_isSpeedEnabled == false)
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-                _speed = _minimumSpeed;
+                _speed = _minimumSpeed * _speedIncreasedRate;
+            }
+
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+
+                if (_isSpeedEnabled == false)
+                {
+                    _speed = _minimumSpeed;
+                }
             }
         }
+        
+        
     }
 
     private void CalculateMovement()
