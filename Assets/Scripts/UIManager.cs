@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameManager _gameManager;
     [SerializeField]
+    private Slider _speedSlider;
     
     public bool IsAmmoCoroutineActive  { get; set; } 
 
@@ -44,12 +45,17 @@ public class UIManager : MonoBehaviour
 
     }
 
+    public void ShowThruster (float speed)
+    {
+        _speedSlider.value = speed;
+
+    }
+         
     public void ShowScore (int score)
     {
         _score.text = "Score: " + score;
         
     }
-
     public void ShowAmmoCount (int ammo)
     {
         _ammoText.text = $"Ammo: {ammo}";
@@ -130,6 +136,11 @@ public class UIManager : MonoBehaviour
         IsAmmoCoroutineActive = false;
        GetComponent<UIManager>().EnableAmmoText();  //In case Coroutine stops while Text is disabled
     } 
+
+    public Slider GetSlider()
+    {
+        return _speedSlider;
+    }
  }
 
 

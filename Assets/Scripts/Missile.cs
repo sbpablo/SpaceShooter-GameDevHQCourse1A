@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-
 public class Missile : MonoBehaviour
 {
     private Transform[] _targets;
@@ -17,7 +16,6 @@ public class Missile : MonoBehaviour
     private float _speed=5f;
     private Boundary _boundary;
     
-
     void Start()
     {
         _enemyContainer = GameObject.Find("SpawnManager").transform.Find("EnemyContainer");
@@ -65,7 +63,7 @@ public class Missile : MonoBehaviour
     {
          if (transform.position.y > _boundary.GetTopCorner().y + _boundary.Offset || transform.position.y<_boundary.GetBottomCorner().y - _boundary.Offset ||
              transform.position.x > _boundary.GetTopCorner().x + _boundary.Offset || transform.position.x<_boundary.GetBottomCorner().x - _boundary.Offset)
-        {
+         {
            
             if (_target != null)
             {
@@ -74,7 +72,7 @@ public class Missile : MonoBehaviour
 
             Destroy(this.gameObject);
 
-        }
+         }
     }
     public void FindAndFollowTarget()
     {
@@ -86,7 +84,6 @@ public class Missile : MonoBehaviour
             {
                 _isTargetAquired = true;
             }
-
         }
         else
         {
@@ -101,9 +98,7 @@ public class Missile : MonoBehaviour
             else
             {
                 _isTargetAquired = false;
-
             }
-
         }
     }
 
@@ -123,8 +118,7 @@ public class Missile : MonoBehaviour
                     closestEnemy = enemy.transform;
                     minDist = distance;
                 }
-            }
-              
+            }    
         }
         
         if (closestEnemy != null)

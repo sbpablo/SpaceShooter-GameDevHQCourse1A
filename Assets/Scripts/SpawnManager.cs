@@ -44,15 +44,14 @@ public class SpawnManager : MonoBehaviour
             throw new ArgumentNullException("Player", "NULL, cannot find Player");
         }
 
-
         _powerUpWeights = new float[_powerUps.Length];
         
         foreach(var obj in _powerUps)
-       {
+        {
             var weigth= obj.GetComponent<PowerUp>().GetSpawnWeight();
             _sumOfPowerUpWeights += weigth;
             _powerUpWeights[Array.IndexOf(_powerUps, obj)] = weigth;
-       }
+        }
 
     }
     public void StartSpawning()

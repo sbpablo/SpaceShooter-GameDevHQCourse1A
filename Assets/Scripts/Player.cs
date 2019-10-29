@@ -4,6 +4,20 @@ using UnityEngine;
 using System;
 
 
+
+public class SpeedCoroutineParameters 
+{
+    public float CurrentSpeed { get; set; }
+    public bool IsSpeedPowerUp { get; set; }
+
+
+    public SpeedCoroutineParameters(float currentSpeed, bool isSpeedPowerUp)
+    {
+        CurrentSpeed = currentSpeed;
+        IsSpeedPowerUp = isSpeedPowerUp;
+    }
+}
+
 public class Player : MonoBehaviour
 {
     [SerializeField]
@@ -49,6 +63,9 @@ public class Player : MonoBehaviour
     private CameraShake _cameraShake;
     [SerializeField]
     private GameObject _missilePrefab;
+    private bool _thrusterBoost;
+    private bool _CoolDownFinish = true;
+    private SpeedCoroutineParameters _speedCoroutineParameters;
     
     void Awake()
     {
@@ -126,6 +143,10 @@ public class Player : MonoBehaviour
 
         _ammoCount = _maxAmmoCount;
         _ui.ShowAmmoCount(_ammoCount);
+        _ui.GetSlider().minValue = _minimumSpeed;
+        _ui.GetSlider().maxValue = Mathf.Max(_speed * _speedMultiplier, _speed * _speedIncreasedRate);
+
+        
 
     }
 
@@ -146,7 +167,12 @@ public class Player : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                _speed = _minimumSpeed * _speedIncreasedRate;
+
+                if (_thrusterBoost == false && _CoolDownFinish ==true)
+                {
+                    StartCoroutine("SpeedIncrease", new SpeedCoroutineParameters(_speed, false ));
+                }
+             
             }
 
             if (Input.GetKeyUp(KeyCode.LeftShift))
@@ -154,12 +180,47 @@ public class Player : MonoBehaviour
 
                 if (_isSpeedEnabled == false)
                 {
-                    _speed = _minimumSpeed;
+                    _thrusterBoost = false;
+                    StopCoroutine("SpeedIncrease");
+                    //_speed = _minimumSpeed;
+                    StartCoroutine("SpeedDecrease");
                 }
             }
         }
-        
-        
+
+         _ui.ShowThruster(_speed);    
+    }
+    IEnumerator SpeedIncrease( SpeedCoroutineParameters parameters )
+    {
+        _thrusterBoost = true;
+        _CoolDownFinish = false;
+        float speedIncreaseRate;
+
+        if (parameters.IsSpeedPowerUp==false)
+        {
+            speedIncreaseRate = _speedIncreasedRate; 
+
+        } else
+        {
+            speedIncreaseRate = _speedMultiplier;
+        }
+
+        for ( float f=parameters.CurrentSpeed; f<= parameters.CurrentSpeed*speedIncreaseRate; f+=0.1f)
+        {
+            _speed = f;
+            yield return null;
+        }
+    }
+
+    IEnumerator SpeedDecrease()
+    {
+        for (float f = _speed; f >= _minimumSpeed; f -= 0.1f)
+        {
+            _speed = f;
+            yield return null;
+        }
+
+        _CoolDownFinish = true;
     }
 
     private void CalculateMovement()
@@ -205,7 +266,6 @@ public class Player : MonoBehaviour
         transform.position = restrectedPos;
     }
 
-    
     private void Fire()
     {
 
@@ -224,15 +284,8 @@ public class Player : MonoBehaviour
         {
             FireMissiles();
             _missileAudioSource.Play();
-
-
         }
-
-        
-
-        
     }
-
     private void FireLaser()
     {
         var offset = new Vector3(0, 1, 0);
@@ -249,9 +302,6 @@ public class Player : MonoBehaviour
     {
         Instantiate(_missilePrefab, transform.position, Quaternion.identity);
     }
-
-
-
     public void AmmoManagement()
     {
         _ammoCount--;
@@ -265,9 +315,7 @@ public class Player : MonoBehaviour
         {
             _ui.StopAmmoCoroutineSecuence();
         }
-
     }
-
 
     public void Damage(String sourceOfDamage)
     {
@@ -316,7 +364,6 @@ public class Player : MonoBehaviour
                     Destroy(this.gameObject);
                     break; 
             }
-
         }
         else
         {
@@ -367,15 +414,24 @@ public class Player : MonoBehaviour
     public void OnSpeedPowerUpCollection(float duration)
     {
         _isSpeedEnabled = true;
-        _speed *= _speedMultiplier;
+        StartCoroutine("SpeedIncrease",new SpeedCoroutineParameters(_speed,true));
         StartCoroutine(SpeedCoolDownRoutine(duration));
 
     }
     IEnumerator SpeedCoolDownRoutine(float duration)
     {
         yield return new WaitForSeconds(duration);
-        _speed /= _speedMultiplier;
+        
+      for (float f = _speed; f >= _minimumSpeed ; f -= 0.1f)
+      {
+            _speed = f;
+            yield return null;
+      }
+
+        _thrusterBoost = false;
         _isSpeedEnabled = false;
+        _CoolDownFinish = true;
+
     }
     public void OnShieldPowerUpCollection (float duration)
     {
@@ -398,7 +454,6 @@ public class Player : MonoBehaviour
         _ui.ShowAmmoCount(_ammoCount);
         _ui.StopAmmoCoroutineSecuence();
     }
-
     public void OnLifePowerUpCollection()
     {
         
@@ -418,7 +473,6 @@ public class Player : MonoBehaviour
         }
        
     }
-
     public void OnMissilePowerUpCollection(float duration)
     {
         _areMissilesEnabled = true;
@@ -431,8 +485,6 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(duration);
         _areMissilesEnabled = false;
     }
-
-
     public void SetScore(int score)
     {
         _killCount += 1;

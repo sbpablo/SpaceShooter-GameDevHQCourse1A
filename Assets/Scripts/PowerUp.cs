@@ -105,17 +105,9 @@ public class PowerUp : MonoBehaviour
                     case 5:
                         player.OnMissilePowerUpCollection(_duration);
                         break;
-
-
                 }
-
-               
-               
             }
             Destroy(this.gameObject);
-
         }
     }
-
-
 }

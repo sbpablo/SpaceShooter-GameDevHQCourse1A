@@ -18,7 +18,6 @@ public class CameraShake : MonoBehaviour
         _initialRotation = transform.rotation;
         
 ;    }
-
     void Update()
     {
         if (!_isShaking) return;
