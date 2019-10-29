@@ -4,7 +4,6 @@ using UnityEngine;
 using System;
 
 
-
 public class Missile : MonoBehaviour
 {
     private Transform[] _targets;
@@ -18,8 +17,6 @@ public class Missile : MonoBehaviour
     private float _speed=5f;
     private Boundary _boundary;
     
-
-
 
     void Start()
     {
@@ -38,7 +35,6 @@ public class Missile : MonoBehaviour
         }
 
         
-
         try
         {
             _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
@@ -54,15 +50,21 @@ public class Missile : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
 
         rb.velocity = transform.up * _speed;
         _targets = _enemyContainer.GetComponentsInChildren<Transform>();
         FindAndFollowTarget(); //Finds and follow the closest enemy.
+        OutOfBoundsActions();
 
-        if ( transform.position.y > _boundary.GetTopCorner().y + _boundary.Offset || transform.position.y < _boundary.GetBottomCorner().y - _boundary.Offset ||
-             transform.position.x > _boundary.GetTopCorner().x + _boundary.Offset || transform.position.x < _boundary.GetBottomCorner().x - _boundary.Offset)
+    }
+
+
+    public void OutOfBoundsActions()
+    {
+         if (transform.position.y > _boundary.GetTopCorner().y + _boundary.Offset || transform.position.y<_boundary.GetBottomCorner().y - _boundary.Offset ||
+             transform.position.x > _boundary.GetTopCorner().x + _boundary.Offset || transform.position.x<_boundary.GetBottomCorner().x - _boundary.Offset)
         {
            
             if (_target != null)
@@ -73,11 +75,7 @@ public class Missile : MonoBehaviour
             Destroy(this.gameObject);
 
         }
-
     }
-
-
-
     public void FindAndFollowTarget()
     {
         if (_isTargetAquired == false)
