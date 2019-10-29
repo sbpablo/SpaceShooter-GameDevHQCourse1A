@@ -20,6 +20,8 @@ public class SpawnManager : MonoBehaviour
     private bool _stopSpawning = false;
     private Boundary _boundary;
     private Player _player;
+    private float _sumOfPowerUpWeights;
+    private float[] _powerUpWeights;
     
     
     void Start()
@@ -43,7 +45,14 @@ public class SpawnManager : MonoBehaviour
         }
 
 
-        // When Asteroid is destroyed, the spawn beggins.
+        _powerUpWeights = new float[_powerUps.Length];
+        
+        foreach(var obj in _powerUps)
+       {
+            var weigth= obj.GetComponent<PowerUp>().GetSpawnWeight();
+            _sumOfPowerUpWeights += weigth;
+            _powerUpWeights[Array.IndexOf(_powerUps, obj)] = weigth;
+       }
 
     }
     public void StartSpawning()
@@ -76,8 +85,7 @@ public class SpawnManager : MonoBehaviour
             var randomXpos = UnityEngine.Random.Range(_boundary.GetBottomCorner().x, _boundary.GetTopCorner().x);
             var Ypos = _boundary.GetTopCorner().y;
 
-
-            int randomIndex;
+            int randomIndex; 
             
             if (_player.GetAmmoCount() == 0) 
             { 
@@ -85,34 +93,10 @@ public class SpawnManager : MonoBehaviour
             }
             else 
             {
-               randomIndex = UnityEngine.Random.Range(0, _powerUps.Length);
+                randomIndex = PowerUpSelection(_powerUpWeights);
             }
 
                 var powerUpInstance = Instantiate(_powerUps[randomIndex], new Vector3(randomXpos, Ypos, 0), Quaternion.identity);
-
-
-            /* NO TIENE SENTIDO HACER SWITCH, mucho mejor lo de arriba con lista (array) !!!
-            
-            var powerUpType = UnityEngine.Random.Range(0 , 3 ); // Al azar si es 0,1,2 para identificar enum de Tipo de PowerUp
-
-            GameObject powerUpInstance=null;
-
-            switch (powerUpType)
-            {
-               
-                case 0: 
-                    powerUpInstance = Instantiate(_tripleShotPowerUp, new Vector3(randomXpos, Ypos, 0), Quaternion.identity);
-                    break;
-                case 1:
-                    powerUpInstance = Instantiate(_speedPowerUp, new Vector3(randomXpos, Ypos, 0), Quaternion.identity);
-                    break;
-                case 2:
-                    powerUpInstance = Instantiate(_shieldPowerUp, new Vector3(randomXpos, Ypos, 0), Quaternion.identity);
-                    break;
-            }
-
-            */
-
 
 
             if (powerUpInstance!= null)
@@ -124,13 +108,27 @@ public class SpawnManager : MonoBehaviour
         }        
     }
 
-
-   
-
-
     public void OnPlayerDeath()
     {
         _stopSpawning = true;
 
+    }
+
+    public int PowerUpSelection (float [] probs)
+    {
+        float randomPoint = UnityEngine.Random.value * _sumOfPowerUpWeights;
+
+        for (int i = 0; i < _powerUpWeights.Length; i++)
+        {
+            if (randomPoint < _powerUpWeights[i])
+            {
+                return i;
+            }
+            else
+            {
+                randomPoint -= _powerUpWeights[i];
+            }   
+        }
+        return _powerUpWeights.Length - 1;   
     }
 }

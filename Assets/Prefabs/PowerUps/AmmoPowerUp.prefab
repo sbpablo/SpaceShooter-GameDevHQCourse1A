@@ -135,3 +135,4 @@ MonoBehaviour:
   _duration: 0
   _speed: 3
   _type: 3
+  _spawnWeight: 20

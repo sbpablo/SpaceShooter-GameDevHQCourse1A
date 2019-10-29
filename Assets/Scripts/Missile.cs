@@ -17,7 +17,7 @@ public class Missile : MonoBehaviour
     [SerializeField]
     private float _speed=5f;
     private Boundary _boundary;
-    private Enemy _enemy;
+    
 
 
 
@@ -98,11 +98,7 @@ public class Missile : MonoBehaviour
                 direction.Normalize();
                 float angle = Vector3.Angle(transform.up, direction);
                 float sign = Vector3.Cross(transform.up, direction).z;
-                //transform.Rotate(Vector3.forward, angle * sign);
-                //transform.Translate(direction * 2f * Time.deltaTime);
                 rb.angularVelocity = angle * sign * _angleChangingSpeed;
-
-
             }
             else
             {

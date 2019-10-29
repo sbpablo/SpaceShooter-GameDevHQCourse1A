@@ -118,6 +118,7 @@ MonoBehaviour:
   _duration: 5
   _speed: 3
   _type: 2
+  _spawnWeight: 20
 --- !u!50 &4728401413001789553
 Rigidbody2D:
   serializedVersion: 4

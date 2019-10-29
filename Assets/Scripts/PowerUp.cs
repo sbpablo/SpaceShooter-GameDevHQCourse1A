@@ -24,6 +24,8 @@ public class PowerUp : MonoBehaviour
     [SerializeField]
     private PowerUpType _type;
     private AudioSource _powerUpAudioSource;
+    [SerializeField]
+    private float _spawnWeight;
   
     void Start()
     {
@@ -59,6 +61,11 @@ public class PowerUp : MonoBehaviour
         }  
     }
 
+    public float GetSpawnWeight()
+    {
+        return _spawnWeight;
+    }
+    
     public float PowerUpDuration()
     {
         return _duration;
