@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _enemylaserPrefab;
     public bool IsbeingTargeted { get; set; }
+    private SpawnManager _spawnManager;
 
 
     void Start()
@@ -64,6 +65,15 @@ public class Enemy : MonoBehaviour
             throw new ArgumentNullException(" Audio MAnager / Explosion Sound", "NULL, cannot find the AudioManager or  audio source of enemy explosion");
         }
 
+
+        try
+        {
+            _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException(" SpawnManager", "cNULL, cannot find SpawnManager");
+        }
 
         StartCoroutine(ShootingRoutine());
 
@@ -122,6 +132,7 @@ public class Enemy : MonoBehaviour
             _collider.enabled = false;
             _speed = 0;
             _explosionAudioSource.Play();
+            _spawnManager.TotalEnemiesInCurrentWave--;
             Destroy(this.gameObject,2.0f);
         }
 
@@ -134,6 +145,7 @@ public class Enemy : MonoBehaviour
             _collider.enabled = false;
             _speed = 0;
             _explosionAudioSource.Play();
+            _spawnManager.TotalEnemiesInCurrentWave--;
             Destroy(this.gameObject,2.0f);        
         }
     }

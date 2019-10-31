@@ -22,6 +22,8 @@ public class UIManager : MonoBehaviour
     private GameManager _gameManager;
     [SerializeField]
     private Slider _speedSlider;
+    [SerializeField]
+    private Text _waveNumberText;
     
     public bool IsAmmoCoroutineActive  { get; set; } 
 
@@ -122,8 +124,7 @@ public class UIManager : MonoBehaviour
 
     }
 
-
-  
+   
     public void EnableAmmoText()
     {
         _ammoText.gameObject.SetActive(true);
@@ -141,8 +142,37 @@ public class UIManager : MonoBehaviour
     {
         return _speedSlider;
     }
- }
+
+    public void ShowWave(int waveNumber) 
+    {
+        _waveNumberText.text= $"Level: {waveNumber}";
+    }
+
+    public void ShowWave(string message)
+    {
+        _waveNumberText.text = "";
+    }
 
 
-   
+    IEnumerator ShowWaveFlickeringSecuence(int waveNumber)
+    {
+        
+        ShowWave(waveNumber);
+        yield return new WaitForSeconds(0.4f);
+        ShowWave("");
+        yield return new WaitForSeconds(0.4f);
+        ShowWave(waveNumber);
+        yield return new WaitForSeconds(0.4f);
+        ShowWave("");
+        yield return new WaitForSeconds(0.4f);
+        ShowWave(waveNumber);
+        yield return new WaitForSeconds(0.4f);
+        ShowWave("");
+
+    }
+
+}
+
+
+
 
