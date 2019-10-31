@@ -142,7 +142,7 @@ public class Player : MonoBehaviour
         _minimumSpeed = _speed;
 
         _ammoCount = _maxAmmoCount;
-        _ui.ShowAmmoCount(_ammoCount);
+        _ui.ShowAmmoCount(_ammoCount,_maxAmmoCount );
         _ui.GetSlider().minValue = _minimumSpeed;
         _ui.GetSlider().maxValue = Mathf.Max(_speed * _speedMultiplier, _speed * _speedIncreasedRate);
 
@@ -305,7 +305,7 @@ public class Player : MonoBehaviour
     public void AmmoManagement()
     {
         _ammoCount--;
-        _ui.ShowAmmoCount(_ammoCount);
+        _ui.ShowAmmoCount(_ammoCount,_maxAmmoCount);
 
         if (_ammoCount <= 5 && _ui.IsAmmoCoroutineActive == false)
         {
@@ -451,7 +451,7 @@ public class Player : MonoBehaviour
     public void OnAmmoPowerUpCollection()
     {
         _ammoCount = _maxAmmoCount;
-        _ui.ShowAmmoCount(_ammoCount);
+        _ui.ShowAmmoCount(_ammoCount,_maxAmmoCount);
         _ui.StopAmmoCoroutineSecuence();
     }
     public void OnLifePowerUpCollection()

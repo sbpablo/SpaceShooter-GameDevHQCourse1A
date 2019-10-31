@@ -56,9 +56,9 @@ public class UIManager : MonoBehaviour
         _score.text = "Score: " + score;
         
     }
-    public void ShowAmmoCount (int ammo)
+    public void ShowAmmoCount (int ammo, int maxAmmo)
     {
-        _ammoText.text = $"Ammo: {ammo}";
+        _ammoText.text = $"Ammo: {ammo} / {maxAmmo}";
     }
 
     public void SetLivesImage(int lives)
