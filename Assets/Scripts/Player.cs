@@ -60,13 +60,16 @@ public class Player : MonoBehaviour
     private AudioSource _laserAudioSource;
     private AudioSource _explosionAudioSource;
     private AudioSource _missileAudioSource;
+    private AudioSource _damageAudioSource;
     private CameraShake _cameraShake;
     [SerializeField]
     private GameObject _missilePrefab;
     private bool _thrusterBoost;
     private bool _CoolDownFinish = true;
     private SpeedCoroutineParameters _speedCoroutineParameters;
-    
+    private Animator _turnLeftAnimation;
+    private Animator _turnRightAnimation;
+
     void Awake()
     {
         transform.position = new Vector3(0, 0, 0);
@@ -130,6 +133,16 @@ public class Player : MonoBehaviour
             throw new ArgumentNullException("AudioManager or Explosion Sound", "NULL, cannot find Audio Manager/ Clip");
         }
 
+
+        try
+        {
+            _damageAudioSource = GameObject.Find("AudioManager").transform.Find("DamageSound").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or Explosion Sound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
         try
         {
             _cameraShake = GameObject.FindWithTag("MainCamera").GetComponent<CameraShake>();
@@ -138,6 +151,23 @@ public class Player : MonoBehaviour
         {
             throw new ArgumentNullException("MainCamera", "NULL, cannot find MainCamera");
         }
+
+       
+        
+        _turnLeftAnimation = GetComponent<Animator>();
+        
+        if (_turnLeftAnimation is null)
+        {
+            Debug.LogError("Player animator not found");
+        }
+
+        _turnRightAnimation = GetComponent<Animator>();
+
+        if (_turnLeftAnimation is null)
+        {
+            Debug.LogError("Player animator not found");
+        }
+
 
         _minimumSpeed = _speed;
 
@@ -152,6 +182,27 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+       /* if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            _turnLeftAnimation.SetInteger("Tilt", -1);
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            _turnLeftAnimation.SetInteger("Tilt", 0);
+        }
+
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            _turnLeftAnimation.SetInteger("Tilt", -1);
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            _turnLeftAnimation.SetInteger("Tilt", 0);
+        }
+        */
+
         CalculateMovement();
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire && _ammoCount>0)
@@ -227,6 +278,8 @@ public class Player : MonoBehaviour
     {
 
         var horizontalImput = Input.GetAxis("Horizontal");
+        _turnLeftAnimation.SetInteger("HorizontalInput",  Mathf.FloorToInt(horizontalImput));
+        _turnRightAnimation.SetInteger("HorizontalInput", Mathf.CeilToInt(horizontalImput));
         var verticalImput = Input.GetAxis("Vertical");
 
         var movement = new Vector3(horizontalImput, verticalImput, 0);
@@ -338,8 +391,9 @@ public class Player : MonoBehaviour
                     {
                         _rightEngine.SetActive(true);
                     }
-                   
+                    _damageAudioSource.Play();
                      break;
+
                 case 1:
                     if (_leftEngine.activeSelf == true)
                     {
@@ -349,6 +403,7 @@ public class Player : MonoBehaviour
                     {
                         _leftEngine.SetActive(true);
                     }
+                    _damageAudioSource.Play();
                     break;
 
                 case 0:

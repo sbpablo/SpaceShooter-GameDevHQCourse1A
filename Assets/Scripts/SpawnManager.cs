@@ -73,6 +73,7 @@ public class SpawnManager : MonoBehaviour
     private AudioSource _nextWaveAudioSource;
     private AudioSource _playerHasWonAudioSorce;
     private AudioSource _backGroundMusic;
+    private bool _waveInit;
 
 
     void Start()
@@ -168,12 +169,11 @@ public class SpawnManager : MonoBehaviour
 
     public void StartWave()
     {
-        _nextWaveAudioSource.Play();
-        
-        _indexesOfEnemiesAlive.Clear();
 
+        _waveInit = true;
         _currentWave++;
-
+        _nextWaveAudioSource.Play();
+        _indexesOfEnemiesAlive.Clear();
         _uIManager.StartCoroutine("ShowWaveFlickeringSecuence",_currentWave+1);
         
         TotalEnemiesInCurrentWave = 0;
@@ -185,6 +185,8 @@ public class SpawnManager : MonoBehaviour
             TotalEnemiesInCurrentWave += enemy.GetEnemyCount();
             i++;
         }
+
+        _waveInit = false;
     }
    
 
@@ -198,7 +200,7 @@ public class SpawnManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2.0f);
         
-        while (_stopSpawning==false && TotalEnemiesInCurrentWave>0 )
+        while (_stopSpawning==false && _waveInit==false  )  //  TotalEnemiesInCurrentWave > 0
         {
          
             var randomXPos = UnityEngine.Random.Range(_boundary.GetBottomCorner().x, _boundary.GetTopCorner().x);
@@ -221,8 +223,7 @@ public class SpawnManager : MonoBehaviour
                 }
             }
             
-            yield return new WaitForSeconds(_enemySpawnTime);
-
+          
             if (TotalEnemiesInCurrentWave == 0 && _currentWave+1<_waves.Length) 
             {
                 StartWave();
@@ -232,6 +233,13 @@ public class SpawnManager : MonoBehaviour
             {
                 OnPlayerVictory();
             }
+
+            Debug.Log("TotalEnemiesInCurrentWave: " + TotalEnemiesInCurrentWave);
+            Debug.Log("_currentWave: " + _currentWave);
+            Debug.Log("_waves.Length:" + _waves.Length);
+            
+            yield return new WaitForSeconds(_enemySpawnTime);
+
         }
     }
 
@@ -239,7 +247,7 @@ public class SpawnManager : MonoBehaviour
     {
         yield return new WaitForSeconds(5.0f);
 
-        while (_stopSpawning == false && TotalEnemiesInCurrentWave > 0)
+        while (_stopSpawning == false) // && TotalEnemiesInCurrentWave > 0
         {
             var randomXpos = UnityEngine.Random.Range(_boundary.GetBottomCorner().x, _boundary.GetTopCorner().x);
             var Ypos = _boundary.GetTopCorner().y;
@@ -280,16 +288,7 @@ public class SpawnManager : MonoBehaviour
         _playerHasWonAudioSorce.Play();
         _uIManager.GameOverSecuence(true);
         
-
     }
-
-    public void OnWavesEnd()
-    {
-        _stopSpawning = true;
-        Debug.Log("Waves ended, you won");
-    }
-
-    
 
     public int PowerUpSelection (float [] probs)
     {
