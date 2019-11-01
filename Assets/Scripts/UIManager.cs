@@ -24,6 +24,8 @@ public class UIManager : MonoBehaviour
     private Slider _speedSlider;
     [SerializeField]
     private Text _waveNumberText;
+    [SerializeField]
+    private Text _playerHasWonText;
     
     public bool IsAmmoCoroutineActive  { get; set; } 
 
@@ -35,6 +37,7 @@ public class UIManager : MonoBehaviour
         _livesUIImage.sprite = _livesSprites[3];
         _gameOverText.gameObject.SetActive(false);
         _restartText.gameObject.SetActive(false);
+        _playerHasWonText.gameObject.SetActive(false);
 
         try
         {
@@ -69,20 +72,36 @@ public class UIManager : MonoBehaviour
 
         if (lives == 0)
         {
-            GameOverSecuence();      
+            GameOverSecuence(false);      
         }
     }
 
-    public void GameOverSecuence()
+    public void GameOverSecuence(bool hasWon)
     {
         _gameManager.GameOver();
-        StartCoroutine(GameOverFlickering());
+
+        if (hasWon)
+        {
+            StartCoroutine(TextFlickering(_playerHasWonText));
+        }
+        else
+        {
+            StartCoroutine(TextFlickering(_gameOverText));
+        }
         ShowRestartMessage();   
     }
+
+   
+
     public void ShowGameOver()
     {
         _gameOverText.gameObject.SetActive(true);
         
+    }
+
+    public void ShowPlayerWin()
+    {
+        _playerHasWonText.gameObject.SetActive(true);
     }
 
     public void DisableGameOver()
@@ -97,12 +116,12 @@ public class UIManager : MonoBehaviour
 
     }
 
-    IEnumerator GameOverFlickering()
+    IEnumerator TextFlickering(Text text)
     {
        
        while (true)
         {
-            _gameOverText.gameObject.SetActive(!_gameOverText.gameObject.activeSelf);
+            text.gameObject.SetActive(!text.gameObject.activeSelf);
             yield return new WaitForSeconds(0.5f);
         }
             

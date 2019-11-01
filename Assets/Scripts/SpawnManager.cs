@@ -45,8 +45,6 @@ public class Wave
 }
 
 
-
-
 public class SpawnManager : MonoBehaviour
 {
 
@@ -72,8 +70,11 @@ public class SpawnManager : MonoBehaviour
     private int _currentWave;
     private UIManager _uIManager;
     private List<int> _indexesOfEnemiesAlive = new List<int>();
-    
-    
+    private AudioSource _nextWaveAudioSource;
+    private AudioSource _playerHasWonAudioSorce;
+    private AudioSource _backGroundMusic;
+
+
     void Start()
     {
         try
@@ -105,7 +106,36 @@ public class SpawnManager : MonoBehaviour
         }
 
 
-            _powerUpWeights = new float[_powerUps.Length];
+        try
+        {
+            _nextWaveAudioSource = GameObject.Find("AudioManager").transform.Find("WaveFinish").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or Wave Finish Sound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
+
+        try
+        {
+            _playerHasWonAudioSorce = GameObject.Find("AudioManager").transform.Find("PlayerHasWon").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or PlayerHasWon", "NULL, cannot find Audio Manager/ Clip");
+        }
+
+        try
+        {
+            _backGroundMusic= GameObject.Find("AudioManager").transform.Find("BackgroundMusic").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or BackgroundMusic", "NULL, cannot find Audio Manager/ Clip");
+        }
+
+
+        _powerUpWeights = new float[_powerUps.Length];
         
         foreach(var obj in _powerUps)
         {
@@ -114,15 +144,32 @@ public class SpawnManager : MonoBehaviour
             _powerUpWeights[Array.IndexOf(_powerUps, obj)] = weigth;
         }
 
-        
-
         _currentWave = -1;
         _totalWaves = _waves.Length;
-    }
 
+
+        for (int i=0; i< _waves.Length; i++)
+        {
+            for (int j=0; j< _waves[i].GetEnemiesInWave().Length;j++)
+            {
+                if (_waves[i].GetEnemiesInWave()[j].GetEnemy().gameObject == null)
+                {
+                    Debug.LogError($"SpawnManager Error: In Waves Element {i}, the Enemy Prefab Element {j} has not been asiggned in the inspector ");
+                }
+
+                if (_waves[i].GetEnemiesInWave()[j].GetEnemyCount() == 0)
+                {
+                    Debug.LogWarning($"SpawnManager Warning: In Waves Element {i}, in the Enemy Prefab Element {j}, the enemy count is set to 0, so it will not spawn");
+                }
+            }
+        }
+
+    }
 
     public void StartWave()
     {
+        _nextWaveAudioSource.Play();
+        
         _indexesOfEnemiesAlive.Clear();
 
         _currentWave++;
@@ -132,19 +179,12 @@ public class SpawnManager : MonoBehaviour
         TotalEnemiesInCurrentWave = 0;
         
         var i = 0;
-        
-
         foreach(var enemy in _waves[_currentWave].GetEnemiesInWave())
         {
             _indexesOfEnemiesAlive.Add(i);
             TotalEnemiesInCurrentWave += enemy.GetEnemyCount();
             i++;
         }
-
-        Debug.Log(_indexesOfEnemiesAlive.Count);
-
-        
-        
     }
    
 
@@ -163,37 +203,32 @@ public class SpawnManager : MonoBehaviour
          
             var randomXPos = UnityEngine.Random.Range(_boundary.GetBottomCorner().x, _boundary.GetTopCorner().x);
             var YPos = _boundary.GetTopCorner().y;
-
-
-            // bool _hasfoundEnemy;
-
-            //var randomEnemyinWave = UnityEngine.Random.Range(0, _waves[_currentWave].GetEnemiesInWave().Length);
             var randomEnemyinWave = UnityEngine.Random.Range(0, _indexesOfEnemiesAlive.Count);
 
-            // NO ESTOY CONTROLANDO POR EL MOMENTO CANTIDADES INDIVIDUALES DE LOS GRUPOS DE ENEMIGOS para el Spawn, 
-            // SOLO SI SE MATA UNA CANTIDAD GLOBAL
-
-            if (_waves[_currentWave].GetEnemiesInWave()[randomEnemyinWave].GetEnemyCount() > 0)
-            {
-                var enemyInstance = Instantiate(_waves[_currentWave].GetEnemiesInWave()[randomEnemyinWave].GetEnemy(), new Vector3(randomXPos, YPos, 0), Quaternion.identity);
-                //enemyInstance.transform.SetParent(this.transform);
-                enemyInstance.transform.parent = _enemyContainer.transform;
-                _waves[_currentWave].GetEnemiesInWave()[randomEnemyinWave].DecreaseEnemyCount(1);
-            }
-            else
-            {
-                _indexesOfEnemiesAlive.RemoveAt(randomEnemyinWave);
-            }
-
-           
             
-  
-
+            if (_indexesOfEnemiesAlive.Count > 0)
+            {
+                if (_waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemyCount() > 0)
+                {
+                    var enemyInstance = Instantiate(_waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemy(), new Vector3(randomXPos, YPos, 0), Quaternion.identity);
+                    enemyInstance.transform.parent = _enemyContainer.transform;
+                    _waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].DecreaseEnemyCount(1);
+                }
+                else
+                        _indexesOfEnemiesAlive.RemoveAt(randomEnemyinWave);
+                  
+            }
+            
             yield return new WaitForSeconds(_enemySpawnTime);
 
-            if (TotalEnemiesInCurrentWave == 0)
+            if (TotalEnemiesInCurrentWave == 0 && _currentWave+1<_waves.Length) 
             {
                 StartWave();
+
+            }
+            else if (TotalEnemiesInCurrentWave == 0 && _currentWave + 1 == _waves.Length)
+            {
+                OnPlayerVictory();
             }
         }
     }
@@ -235,6 +270,24 @@ public class SpawnManager : MonoBehaviour
         _stopSpawning = true;
 
     }
+
+    public void OnPlayerVictory()
+    {
+        _stopSpawning = true;
+        _backGroundMusic.Stop();
+        _playerHasWonAudioSorce.Play();
+        _uIManager.GameOverSecuence(true);
+        
+
+    }
+
+    public void OnWavesEnd()
+    {
+        _stopSpawning = true;
+        Debug.Log("Waves ended, you won");
+    }
+
+    
 
     public int PowerUpSelection (float [] probs)
     {
