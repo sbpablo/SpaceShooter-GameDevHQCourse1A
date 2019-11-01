@@ -3,8 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+
+
 public class Enemy : MonoBehaviour
 {
+    public enum ShotDirection
+    {
+        vertical,
+        AtEnemy
+    };
+
     [SerializeField] 
     private float _speed=4.0f;
     private Boundary _boundary;
@@ -18,6 +26,9 @@ public class Enemy : MonoBehaviour
     private GameObject _enemylaserPrefab;
     public bool IsbeingTargeted { get; set; }
     private SpawnManager _spawnManager;
+    [SerializeField]
+    private ShotDirection _shotDirection;
+   
 
 
     void Start()
@@ -95,22 +106,35 @@ public class Enemy : MonoBehaviour
         }
     }
     
-    public void ShootatPlayerDirection()
+    public void Shoot (ShotDirection dir)
     {
         if (_player != null)
-        {
-            var direction =  _player.transform.position - transform.position;
-            var angle = Vector3.Angle(transform.up, direction);
-            var sign = Mathf.Sign(Vector3.Cross(transform.up, direction).z);
-            var laser= Instantiate(_enemylaserPrefab, transform.position, Quaternion.Euler(0,0, angle*sign));
+        { 
+            switch (dir)
+            {
+                case ShotDirection.AtEnemy:
+
+                    var direction = _player.transform.position - transform.position;
+                    var angle = Vector3.Angle(-transform.up, direction);
+                    var sign = Mathf.Sign(Vector3.Cross(-transform.up, direction).z);
+                    var laser = Instantiate(_enemylaserPrefab, transform.position, Quaternion.Euler(0, 0, angle * sign));
+                    break;
+
+                case ShotDirection.vertical:
+
+                    var VerticalLaser = Instantiate(_enemylaserPrefab, transform.position, Quaternion.identity);
+                    break;
+            }
         }
     }
+
     
     IEnumerator ShootingRoutine ()
     {
         while (true) 
         {
-            ShootatPlayerDirection();
+            
+            Shoot(_shotDirection);
             var randomSeconds = UnityEngine.Random.Range(3, 8);
             yield return new WaitForSeconds(randomSeconds);
         }

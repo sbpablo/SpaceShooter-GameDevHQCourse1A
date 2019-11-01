@@ -213,10 +213,12 @@ public class SpawnManager : MonoBehaviour
                     var enemyInstance = Instantiate(_waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemy(), new Vector3(randomXPos, YPos, 0), Quaternion.identity);
                     enemyInstance.transform.parent = _enemyContainer.transform;
                     _waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].DecreaseEnemyCount(1);
-                }
-                else
+                    
+                    if (_waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemyCount() == 0)
+                    {
                         _indexesOfEnemiesAlive.RemoveAt(randomEnemyinWave);
-                  
+                    }  
+                }
             }
             
             yield return new WaitForSeconds(_enemySpawnTime);

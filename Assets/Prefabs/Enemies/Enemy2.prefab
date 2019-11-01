@@ -262,6 +262,7 @@ MonoBehaviour:
   _scoreIfkilled: 10
   _enemylaserPrefab: {fileID: 4886664318006039583, guid: 4a906dbdf2bc0c44a8effc53ddd66395,
     type: 3}
+  _shotDirection: 1
 --- !u!95 &1068495683
 Animator:
   serializedVersion: 3

@@ -2859,7 +2859,17 @@ MonoBehaviour:
   - _enemiesInWave:
     - _enemy: {fileID: 8281877885480179825, guid: ed0a62b4bf07517459b689b55b9827d0,
         type: 3}
+      _enemyCount: 2
+    - _enemy: {fileID: 8411735713864941261, guid: cc47daedecc8fd544b00415a18775deb,
+        type: 3}
+      _enemyCount: 2
+  - _enemiesInWave:
+    - _enemy: {fileID: 5097457530527459424, guid: 8abc5b0786242d64b9df79e8f6c53b88,
+        type: 3}
       _enemyCount: 3
+    - _enemy: {fileID: 8281877885480179825, guid: ed0a62b4bf07517459b689b55b9827d0,
+        type: 3}
+      _enemyCount: 1
   _enemyContainer: {fileID: 828832905}
   _enemySpawnTime: 2
   _powerUps:
