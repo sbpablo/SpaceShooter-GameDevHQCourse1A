@@ -3034,6 +3034,8 @@ MonoBehaviour:
   - {fileID: 5458880835173129625, guid: f9f1bf4d4d4646940bf69cb029ababf8, type: 3}
   _powerUpContainer: {fileID: 2123264297}
   _powerUpSpawnTime: 7
+  _currentWave: 0
+  _waveInit: 0
 --- !u!4 &2014493858
 Transform:
   m_ObjectHideFlags: 0
@@ -3239,6 +3241,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7378566579827735836, guid: 85b09eaa755bcef4ab6361bce68191c8,
         type: 3}
+    - target: {fileID: 1057090171250050076, guid: 26cba23d70f11ab439717c3564aa83a0,
+        type: 3}
+      propertyPath: _fireRate
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 1057090171250050079, guid: 26cba23d70f11ab439717c3564aa83a0,
         type: 3}
       propertyPath: m_SortingOrder

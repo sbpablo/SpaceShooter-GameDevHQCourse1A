@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
     private float _speed = 10;
     private float _minimumSpeed;
     [SerializeField]
-    private float _speedMultiplier = 2;
+    private float _speedMultiplier = 1.5f;
     [SerializeField]
     private float _speedIncreasedRate = 2f;
     [SerializeField]

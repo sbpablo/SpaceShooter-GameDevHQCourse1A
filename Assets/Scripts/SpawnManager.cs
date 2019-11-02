@@ -65,14 +65,17 @@ public class SpawnManager : MonoBehaviour
     private Player _player;
     private float _sumOfPowerUpWeights;
     private float[] _powerUpWeights;
+    [SerializeField]
     public int TotalEnemiesInCurrentWave{ get; set; }
     private int _totalWaves;
+    [SerializeField]
     private int _currentWave;
     private UIManager _uIManager;
     private List<int> _indexesOfEnemiesAlive = new List<int>();
     private AudioSource _nextWaveAudioSource;
     private AudioSource _playerHasWonAudioSorce;
     private AudioSource _backGroundMusic;
+    [SerializeField]
     private bool _waveInit;
 
 
@@ -223,15 +226,16 @@ public class SpawnManager : MonoBehaviour
                 }
             }
             
-          
-            if (TotalEnemiesInCurrentWave == 0 && _currentWave+1<_waves.Length) 
+            if (TotalEnemiesInCurrentWave == 0)
             {
-                StartWave();
-
-            }
-            else if (TotalEnemiesInCurrentWave == 0 && _currentWave + 1 == _waves.Length)
-            {
-                OnPlayerVictory();
+                if (_currentWave+1 < _waves.Length)
+                {
+                    StartWave();
+                }
+                else
+                {
+                    OnPlayerVictory();
+                }
             }
 
             Debug.Log("TotalEnemiesInCurrentWave: " + TotalEnemiesInCurrentWave);
