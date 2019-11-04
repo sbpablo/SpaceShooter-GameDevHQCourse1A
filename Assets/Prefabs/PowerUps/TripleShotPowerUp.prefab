@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1114976888797835630}
   - component: {fileID: 1114976888797835618}
   - component: {fileID: 263130266}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TripleShotPowerUp
   m_TagString: TripleShotPowerUp
   m_Icon: {fileID: 0}
@@ -249,7 +249,7 @@ MonoBehaviour:
   _duration: 10
   _speed: 3
   _type: 0
-  _spawnWeight: 20
+  _spawnWeight: 1000
 --- !u!95 &263130266
 Animator:
   serializedVersion: 3

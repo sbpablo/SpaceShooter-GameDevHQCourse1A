@@ -14,20 +14,20 @@ public class Enemy : MonoBehaviour
     };
 
     [SerializeField] 
-    private float _speed=4.0f;
-    private Boundary _boundary;
-    private Player _player;
+    private protected float _speed=4.0f;
+    private protected Boundary _boundary;
+    private protected Player _player;
     [SerializeField]
-    private int _scoreIfkilled = 10;
-    private Animator _anim;
-    private Collider2D _collider;
-    private AudioSource _explosionAudioSource;
+    private protected int _scoreIfkilled = 10;
+    private protected Animator _anim;
+    private protected Collider2D _collider;
+    private protected AudioSource _explosionAudioSource;
     [SerializeField]
     private GameObject _enemylaserPrefab;
     public bool IsbeingTargeted { get; set; }
-    private SpawnManager _spawnManager;
+    private protected SpawnManager _spawnManager;
     [SerializeField]
-    private ShotDirection _shotDirection;
+    private protected ShotDirection _shotDirection;
    
 
 
@@ -94,7 +94,7 @@ public class Enemy : MonoBehaviour
         CalculateMovement();
     }
 
-    void CalculateMovement()
+   private protected virtual void  CalculateMovement()
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
@@ -140,7 +140,7 @@ public class Enemy : MonoBehaviour
         }
 
     }
-    private void OnTriggerEnter2D (Collider2D other)
+    private  void OnTriggerEnter2D (Collider2D other)
     {
         if (other.tag == "Laser" || other.tag=="Missile")
         {
@@ -151,6 +151,7 @@ public class Enemy : MonoBehaviour
                 _player.SetScore(_scoreIfkilled);
             }
 
+            Debug.Log("Estoy pasando por aca!!?!?!?!");
             // anim.SetTrigger("OnEnemyDeath");
             _anim.Play("EnemyExplosion", 0, 0.16f);
             _collider.enabled = false;
@@ -164,6 +165,7 @@ public class Enemy : MonoBehaviour
         if (other.tag == "Player")
         {
             _player.Damage(this.gameObject.tag);
+            Debug.Log("Porque pregunta por este tag??:" + this.gameObject.tag);
             _anim.Play("EnemyExplosion", 0, 0.16f); // 0.16 starts the animation not at the beginning to avoid the enemy sprite in the animation.
             //_anim.SetTrigger("OnEnemyDeath");
             _collider.enabled = false;
@@ -172,5 +174,7 @@ public class Enemy : MonoBehaviour
             _spawnManager.TotalEnemiesInCurrentWave--;
             Destroy(this.gameObject,2.0f);        
         }
+
+        Debug.Log("OnTriggerEnter de Enemy Script" + other.gameObject.name);
     }
 }

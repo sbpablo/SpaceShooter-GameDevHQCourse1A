@@ -70,7 +70,7 @@ public class UIManager : MonoBehaviour
     {
         _livesUIImage.sprite = _livesSprites[lives];
 
-        if (lives == 0)
+        if (lives == 0 && _restartText.IsActive()==false)  // if _restartText is Active, player has already won the game.
         {
             GameOverSecuence(false);      
         }

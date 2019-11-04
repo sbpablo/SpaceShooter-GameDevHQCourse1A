@@ -10,6 +10,7 @@ TagManager:
   - Asteroid
   - EnemyLaser
   - Missile
+  - RamEnemy
   layers:
   - Default
   - TransparentFX
@@ -20,12 +21,12 @@ TagManager:
   - 
   - 
   - PostProccesing
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - RamEnemy
+  - PowerUps
+  - Laser
+  - Player
+  - Enemy
+  - EnemyLaser
   - 
   - 
   - 

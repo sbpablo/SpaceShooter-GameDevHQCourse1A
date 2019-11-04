@@ -187,6 +187,27 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1057090169894216385}
   m_PrefabAsset: {fileID: 0}
+--- !u!50 &219982748
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219982747}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!95 &219982752
 Animator:
   serializedVersion: 3
@@ -819,7 +840,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0.069, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &649218426
@@ -1426,7 +1447,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 1, z: -16.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2428,8 +2449,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1455140513}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.246, z: 0}
-  m_LocalScale: {x: 1.07433, y: 1.2236564, z: 1}
+  m_LocalPosition: {x: 0.005, y: 1.027, z: 0}
+  m_LocalScale: {x: 1.7938794, y: 1.7797668, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -3012,17 +3033,37 @@ MonoBehaviour:
   - _enemiesInWave:
     - _enemy: {fileID: 8281877885480179825, guid: ed0a62b4bf07517459b689b55b9827d0,
         type: 3}
-      _enemyCount: 2
-    - _enemy: {fileID: 8411735713864941261, guid: cc47daedecc8fd544b00415a18775deb,
-        type: 3}
-      _enemyCount: 2
+      _enemyCount: 5
   - _enemiesInWave:
-    - _enemy: {fileID: 5097457530527459424, guid: 8abc5b0786242d64b9df79e8f6c53b88,
-        type: 3}
-      _enemyCount: 3
     - _enemy: {fileID: 8281877885480179825, guid: ed0a62b4bf07517459b689b55b9827d0,
         type: 3}
-      _enemyCount: 1
+      _enemyCount: 5
+    - _enemy: {fileID: 8411735713864941261, guid: cc47daedecc8fd544b00415a18775deb,
+        type: 3}
+      _enemyCount: 5
+  - _enemiesInWave:
+    - _enemy: {fileID: 8281877885480179825, guid: ed0a62b4bf07517459b689b55b9827d0,
+        type: 3}
+      _enemyCount: 5
+    - _enemy: {fileID: 8411735713864941261, guid: cc47daedecc8fd544b00415a18775deb,
+        type: 3}
+      _enemyCount: 5
+    - _enemy: {fileID: 5097457530527459424, guid: 8abc5b0786242d64b9df79e8f6c53b88,
+        type: 3}
+      _enemyCount: 5
+  - _enemiesInWave:
+    - _enemy: {fileID: 8281877885480179825, guid: ed0a62b4bf07517459b689b55b9827d0,
+        type: 3}
+      _enemyCount: 5
+    - _enemy: {fileID: 8411735713864941261, guid: cc47daedecc8fd544b00415a18775deb,
+        type: 3}
+      _enemyCount: 5
+    - _enemy: {fileID: 5097457530527459424, guid: 8abc5b0786242d64b9df79e8f6c53b88,
+        type: 3}
+      _enemyCount: 5
+    - _enemy: {fileID: 8668864751581280222, guid: e68bd98e0825fa94682a2bb4fdf7a8c8,
+        type: 3}
+      _enemyCount: 5
   _enemyContainer: {fileID: 828832905}
   _enemySpawnTime: 2
   _powerUps:
@@ -3162,7 +3203,7 @@ PrefabInstance:
     - target: {fileID: 1057090171250050078, guid: 26cba23d70f11ab439717c3564aa83a0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -3.12
       objectReference: {fileID: 0}
     - target: {fileID: 1057090171250050078, guid: 26cba23d70f11ab439717c3564aa83a0,
         type: 3}
@@ -3245,6 +3286,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _fireRate
       value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1057090171250050076, guid: 26cba23d70f11ab439717c3564aa83a0,
+        type: 3}
+      propertyPath: _maxAmmoCount
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 1057090171250050079, guid: 26cba23d70f11ab439717c3564aa83a0,
         type: 3}

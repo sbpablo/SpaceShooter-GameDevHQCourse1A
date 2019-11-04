@@ -9,7 +9,7 @@ public class Missile : MonoBehaviour
     private Transform _enemyContainer;
     private Transform _target;
     private bool _isTargetAquired;
-    private Rigidbody2D rb;
+    private Rigidbody2D _rb;
     [SerializeField]
     private float _angleChangingSpeed =15f;
     [SerializeField]
@@ -25,9 +25,9 @@ public class Missile : MonoBehaviour
             Debug.LogError("EnemyContainer could not be found");
         }
 
-        rb = GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody2D>();
 
-        if (rb == null)
+        if (_rb == null)
         {
             Debug.LogError("Rigidbody Component could not be found");
         }
@@ -47,14 +47,17 @@ public class Missile : MonoBehaviour
         _boundary.Offset = 5.0f;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+     void Update()
     {
-
-        rb.velocity = transform.up * _speed;
         _targets = _enemyContainer.GetComponentsInChildren<Transform>();
         FindAndFollowTarget(); //Finds and follow the closest enemy.
         OutOfBoundsActions();
+    }
+    void FixedUpdate()
+    {
+
+        _rb.velocity = transform.up * _speed;
+       
 
     }
 
@@ -93,7 +96,7 @@ public class Missile : MonoBehaviour
                 direction.Normalize();
                 float angle = Vector3.Angle(transform.up, direction);
                 float sign = Vector3.Cross(transform.up, direction).z;
-                rb.angularVelocity = angle * sign * _angleChangingSpeed;
+                _rb.angularVelocity = angle * sign * _angleChangingSpeed;
             }
             else
             {

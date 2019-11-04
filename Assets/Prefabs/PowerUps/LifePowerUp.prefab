@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 86306041407478806}
   - component: {fileID: 5125314682861859021}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shields_00000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 5458880835173129631}
   - component: {fileID: 5458880835173129624}
   - component: {fileID: 5458880835173129315}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LifePowerUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}

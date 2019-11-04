@@ -69,6 +69,7 @@ public class Player : MonoBehaviour
     private SpeedCoroutineParameters _speedCoroutineParameters;
     private Animator _turnLeftAnimation;
     private Animator _turnRightAnimation;
+    private Rigidbody2D _rb;
 
     void Awake()
     {
@@ -82,6 +83,8 @@ public class Player : MonoBehaviour
         {
             throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
         }
+
+
 
         try
         {
@@ -170,6 +173,7 @@ public class Player : MonoBehaviour
 
 
         _minimumSpeed = _speed;
+        _rb = GetComponent<Rigidbody2D>();
 
         _ammoCount = _maxAmmoCount;
         _ui.ShowAmmoCount(_ammoCount,_maxAmmoCount );
@@ -180,6 +184,11 @@ public class Player : MonoBehaviour
 
     }
 
+
+    private void FixedUpdate()
+    {
+        CalculateMovement();
+    }
     void Update()
     {
        /* if (Input.GetKey(KeyCode.LeftArrow))
@@ -203,7 +212,7 @@ public class Player : MonoBehaviour
         }
         */
 
-        CalculateMovement();
+       
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire && _ammoCount>0)
         {
@@ -284,7 +293,9 @@ public class Player : MonoBehaviour
 
         var movement = new Vector3(horizontalImput, verticalImput, 0);
 
-        transform.Translate(movement * _speed * Time.deltaTime);
+        _rb.velocity = (movement * _speed);
+        
+        //_rb.MovePosition(transform.position + movement * _speed * Time.fixedDeltaTime );
 
         // El objeto puede moverse en el eje X Libremente. Si pasa del límite de la pantalla, debe salir por el otro lado.
 
@@ -316,7 +327,7 @@ public class Player : MonoBehaviour
 
         var restrectedPos = new Vector3(restrictedX, restrictedY);
 
-        transform.position = restrectedPos;
+        _rb.position = restrectedPos;
     }
 
     private void Fire()
@@ -556,4 +567,8 @@ public class Player : MonoBehaviour
         return _ammoCount;
     }
 
+    public int GetLives()
+    {
+        return _lives;
+    }
 }

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8796781150470262681}
   - component: {fileID: 5468612549918319}
   - component: {fileID: 6363981462069451956}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -121,6 +121,7 @@ MonoBehaviour:
   _scoreIfkilled: 10
   _enemylaserPrefab: {fileID: 4886664318006039583, guid: 4a906dbdf2bc0c44a8effc53ddd66395,
     type: 3}
+  _shotDirection: 0
 --- !u!60 &5468612549918319
 PolygonCollider2D:
   m_ObjectHideFlags: 0
