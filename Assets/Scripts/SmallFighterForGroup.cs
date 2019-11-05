@@ -81,7 +81,7 @@ public class SmallFighterForGroup : Enemy
     
     }
 
-    private  void OnTriggerEnter2D(Collider2D collision)
+    private protected override void  OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Laser" || collision.tag == "Missile")
         {
@@ -121,8 +121,9 @@ public class SmallFighterForGroup : Enemy
         }
 
         Debug.Log("On Trigger Enter - SmallFighterforGroups");
+        Debug.Log("I was hitted: " + this.gameObject.name + " by: " + collision.gameObject.tag);
 
-      
+
     }
 }
 

@@ -217,6 +217,8 @@ public class SpawnManager : MonoBehaviour
                 {
                     var enemyInstance = Instantiate(_waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemy(), new Vector3(randomXPos, YPos, 0), Quaternion.identity);
                     enemyInstance.transform.parent = _enemyContainer.transform;
+                    enemyInstance.name = enemyInstance.name +" Wave: "+  (_currentWave + 1) +" Element: " + randomEnemyinWave 
+                                         + " " + "Count: " + _waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemyCount();
                     _waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].DecreaseEnemyCount(1);
                     
                     if (_waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemyCount() == 0)

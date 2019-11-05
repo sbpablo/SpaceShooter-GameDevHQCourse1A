@@ -140,41 +140,42 @@ public class Enemy : MonoBehaviour
         }
 
     }
-    private  void OnTriggerEnter2D (Collider2D other)
+    private protected virtual void OnTriggerEnter2D (Collider2D other)
     {
         if (other.tag == "Laser" || other.tag=="Missile")
         {
             Destroy(other.gameObject);
+            Debug.Log("que carajo pasa " + this.gameObject.tag + "  " + other.gameObject.tag);
+            _collider.enabled = false;
+        
+            
 
             if (_player != null)
             {
                 _player.SetScore(_scoreIfkilled);
             }
-
-            Debug.Log("Estoy pasando por aca!!?!?!?!");
             // anim.SetTrigger("OnEnemyDeath");
             _anim.Play("EnemyExplosion", 0, 0.16f);
-            _collider.enabled = false;
             _speed = 0;
             _explosionAudioSource.Play();
+            Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
             _spawnManager.TotalEnemiesInCurrentWave--;
             Destroy(this.gameObject,2.0f);
+            
         }
 
 
         if (other.tag == "Player")
         {
             _player.Damage(this.gameObject.tag);
-            Debug.Log("Porque pregunta por este tag??:" + this.gameObject.tag);
             _anim.Play("EnemyExplosion", 0, 0.16f); // 0.16 starts the animation not at the beginning to avoid the enemy sprite in the animation.
             //_anim.SetTrigger("OnEnemyDeath");
             _collider.enabled = false;
             _speed = 0;
             _explosionAudioSource.Play();
+            Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
             _spawnManager.TotalEnemiesInCurrentWave--;
             Destroy(this.gameObject,2.0f);        
         }
-
-        Debug.Log("OnTriggerEnter de Enemy Script" + other.gameObject.name);
     }
 }

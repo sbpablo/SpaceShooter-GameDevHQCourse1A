@@ -115,15 +115,10 @@ public class RamEnemy : Enemy
         }
     }
 
-    private  void OnTriggerEnter2D(Collider2D collision)
+    private protected override void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("On Trigger Enter - RamEnemy");
- 
+        return;
     }
-    
-
-
-
-
+   
 
 }

@@ -3290,7 +3290,7 @@ PrefabInstance:
     - target: {fileID: 1057090171250050076, guid: 26cba23d70f11ab439717c3564aa83a0,
         type: 3}
       propertyPath: _maxAmmoCount
-      value: 15
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 1057090171250050079, guid: 26cba23d70f11ab439717c3564aa83a0,
         type: 3}
