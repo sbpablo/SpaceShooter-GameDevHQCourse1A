@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-public class UIManager : MonoBehaviour
+public class UIManager : MonoSingleton <UIManager>
 {
     [SerializeField]
     private Text _score;
@@ -18,8 +18,6 @@ public class UIManager : MonoBehaviour
     private Text _restartText;
     [SerializeField]
     private Text _ammoText;
-    [SerializeField]
-    private GameManager _gameManager;
     [SerializeField]
     private Slider _speedSlider;
     [SerializeField]
@@ -39,14 +37,7 @@ public class UIManager : MonoBehaviour
         _restartText.gameObject.SetActive(false);
         _playerHasWonText.gameObject.SetActive(false);
 
-        try
-        {
-            _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        }
-        catch (System.Exception)
-        {
-            throw new ArgumentNullException("Game Manager", "NULL, cannot find GameManager");
-        }
+       
 
     }
 
@@ -78,7 +69,7 @@ public class UIManager : MonoBehaviour
 
     public void GameOverSecuence(bool hasWon)
     {
-        _gameManager.GameOver();
+        GameManager.Instance.GameOver();
 
         if (hasWon)
         {

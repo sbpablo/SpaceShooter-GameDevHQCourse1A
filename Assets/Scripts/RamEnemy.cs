@@ -15,14 +15,7 @@ public class RamEnemy : Enemy
     void Start()
     {
 
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
+      
 
         _rb = GetComponent<Rigidbody2D>();
 
@@ -49,26 +42,6 @@ public class RamEnemy : Enemy
             throw new ArgumentNullException("Player", "NULL, cannot find Player");
         }
 
-        try
-        {
-            _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException(" SpawnManager", "cNULL, cannot find SpawnManager");
-        }
-
-        
-
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-       
- 
-        
     }
 
  
@@ -94,11 +67,11 @@ public class RamEnemy : Enemy
     {
         {
 
-            if (_rb.position.y <= _boundary.GetBottomCorner().y)
+            if (_rb.position.y <= Boundary.Instance.GetBottomCorner().y)
             {
-                var randomX = UnityEngine.Random.Range(_boundary.GetBottomCorner().x, _boundary.GetTopCorner().x);
+                var randomX = UnityEngine.Random.Range(Boundary.Instance.GetBottomCorner().x, Boundary.Instance.GetTopCorner().x);
 
-                _rb.position = new Vector3(randomX, _boundary.GetTopCorner().y, 0);
+                _rb.position = new Vector3(randomX, Boundary.Instance.GetTopCorner().y, 0);
             }
 
            
@@ -110,7 +83,7 @@ public class RamEnemy : Enemy
       
         if (transform.childCount == 0)
         {
-            _spawnManager.TotalEnemiesInCurrentWave--;
+            SpawnManager.Instance.TotalEnemiesInCurrentWave--;
             Destroy(this.gameObject);
         }
     }

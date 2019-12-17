@@ -40,8 +40,6 @@ public class Player : MonoBehaviour
     private float _nextFire = 0.0f;
     [SerializeField]
     private int _lives = 3;
-    private Boundary _boundary;
-    private SpawnManager _spawnManager;
     [SerializeField]
     private GameObject _shieldPrefab;
     [SerializeField]
@@ -52,7 +50,6 @@ public class Player : MonoBehaviour
     private int _ammoCount;
     private int _score;
     private int _killCount = 0;
-    private UIManager _ui;
     private GameObject _leftEngine;
     private GameObject _rightEngine;
     [SerializeField]
@@ -71,38 +68,9 @@ public class Player : MonoBehaviour
     private Animator _turnRightAnimation;
     private Rigidbody2D _rb;
 
-    void Awake()
+    void Start()
     {
         transform.position = new Vector3(0, 0, 0);
-
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
-
-
-
-        try
-        {
-            _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("SpawnManager", "NULL, cannot find SpawnManager");
-        }
-
-        try
-        {
-            _ui = GameObject.Find("UIManager").GetComponent<UIManager>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("UIManager", "NULL, cannot find UIManager");
-        }
 
         
         _leftEngine = transform.Find("LeftEngine").gameObject;
@@ -176,11 +144,9 @@ public class Player : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
 
         _ammoCount = _maxAmmoCount;
-        _ui.ShowAmmoCount(_ammoCount,_maxAmmoCount );
-        _ui.GetSlider().minValue = _minimumSpeed;
-        _ui.GetSlider().maxValue = Mathf.Max(_speed * _speedMultiplier, _speed * _speedIncreasedRate);
-
-        
+        UIManager.Instance.ShowAmmoCount(_ammoCount,_maxAmmoCount );
+        UIManager.Instance.GetSlider().minValue = _minimumSpeed;
+        UIManager.Instance.GetSlider().maxValue = Mathf.Max(_speed * _speedMultiplier, _speed * _speedIncreasedRate);
 
     }
 
@@ -248,7 +214,7 @@ public class Player : MonoBehaviour
             }
         }
 
-         _ui.ShowThruster(_speed);    
+         UIManager.Instance.ShowThruster(_speed);    
     }
     IEnumerator SpeedIncrease( SpeedCoroutineParameters parameters )
     {
@@ -302,22 +268,22 @@ public class Player : MonoBehaviour
         float restrictedX = transform.position.x;
 
 
-        if (transform.position.x <= _boundary.GetBottomCorner().x)
+        if (transform.position.x <= Boundary.Instance.GetBottomCorner().x)
         {
-            restrictedX = _boundary.GetTopCorner().x;
+            restrictedX = Boundary.Instance.GetTopCorner().x;
 
         }
-        else if (transform.position.x >= _boundary.GetTopCorner().x)
+        else if (transform.position.x >= Boundary.Instance.GetTopCorner().x)
         {
-            restrictedX = _boundary.GetBottomCorner().x;
+            restrictedX = Boundary.Instance.GetBottomCorner().x;
         }
 
         // El objeto se puede mover en el eje y hasta el limite inferior de la pantalla, sumando su volumen.  
         // Hacia arriba, solo llega hacia la mitad de la pantalla.
 
         var restrictedY = Mathf.Clamp(transform.position.y,
-                                     _boundary.GetBottomCorner().y + this.GetComponent<SpriteRenderer>().bounds.extents.y,
-                                      (_boundary.GetTopCorner().y + _boundary.GetBottomCorner().y) / 2);
+                                     Boundary.Instance.GetBottomCorner().y + this.GetComponent<SpriteRenderer>().bounds.extents.y,
+                                      (Boundary.Instance.GetTopCorner().y + Boundary.Instance.GetBottomCorner().y) / 2);
 
 
         // Posicion restringida considerando tambien el tamaño del objeto
@@ -369,15 +335,15 @@ public class Player : MonoBehaviour
     public void AmmoManagement()
     {
         _ammoCount--;
-        _ui.ShowAmmoCount(_ammoCount,_maxAmmoCount);
+        UIManager.Instance.ShowAmmoCount(_ammoCount,_maxAmmoCount);
 
-        if (_ammoCount <= 5 && _ui.IsAmmoCoroutineActive == false)
+        if (_ammoCount <= 5 && UIManager.Instance.IsAmmoCoroutineActive == false)
         {
-            _ui.StartCoroutine("AmmoCountFlickering");
+            UIManager.Instance.StartCoroutine("AmmoCountFlickering");
         }
-        else if (_ammoCount > 5 && _ui.IsAmmoCoroutineActive == true)  // For inspector debugging.  AmmoPowerUP stops Routine.
+        else if (_ammoCount > 5 && UIManager.Instance.IsAmmoCoroutineActive == true)  // For inspector debugging.  AmmoPowerUP stops Routine.
         {
-            _ui.StopAmmoCoroutineSecuence();
+            UIManager.Instance.StopAmmoCoroutineSecuence();
         }
     }
 
@@ -388,7 +354,7 @@ public class Player : MonoBehaviour
 
             _cameraShake.Shake();
             _lives -= 1;
-            _ui.SetLivesImage(_lives);
+            UIManager.Instance.SetLivesImage(_lives);
 
             switch (_lives)
             {
@@ -418,7 +384,7 @@ public class Player : MonoBehaviour
                     break;
 
                 case 0:
-                    _spawnManager.OnPlayerDeath();
+                    SpawnManager.Instance.OnPlayerDeath();
                     _explosionPrefab = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
 
                     if (_explosionPrefab == null)
@@ -517,8 +483,8 @@ public class Player : MonoBehaviour
     public void OnAmmoPowerUpCollection()
     {
         _ammoCount = _maxAmmoCount;
-        _ui.ShowAmmoCount(_ammoCount,_maxAmmoCount);
-        _ui.StopAmmoCoroutineSecuence();
+        UIManager.Instance.ShowAmmoCount(_ammoCount,_maxAmmoCount);
+        UIManager.Instance.StopAmmoCoroutineSecuence();
     }
     public void OnLifePowerUpCollection()
     {
@@ -526,7 +492,7 @@ public class Player : MonoBehaviour
         if (_lives <3)
         {
             _lives++;
-            _ui.SetLivesImage(_lives);
+            UIManager.Instance.SetLivesImage(_lives);
 
             if (_leftEngine.activeSelf == true)
             {
@@ -555,7 +521,7 @@ public class Player : MonoBehaviour
     {
         _killCount += 1;
         _score += score;
-        _ui.ShowScore(_score);
+        UIManager.Instance.ShowScore(_score);
     }
     public int GetScore()
     {

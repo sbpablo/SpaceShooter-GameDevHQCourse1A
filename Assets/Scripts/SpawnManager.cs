@@ -45,7 +45,7 @@ public class Wave
 }
 
 
-public class SpawnManager : MonoBehaviour
+public class SpawnManager : MonoSingleton<SpawnManager>
 {
 
     [SerializeField]
@@ -61,7 +61,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private float _powerUpSpawnTime=7.0f;
     private bool _stopSpawning = false;
-    private Boundary _boundary;
     private Player _player;
     private float _sumOfPowerUpWeights;
     private float[] _powerUpWeights;
@@ -81,14 +80,6 @@ public class SpawnManager : MonoBehaviour
 
     void Start()
     {
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
 
         try
         {
@@ -206,8 +197,8 @@ public class SpawnManager : MonoBehaviour
         while (_stopSpawning==false && _waveInit==false  )  //  TotalEnemiesInCurrentWave > 0
         {
          
-            var randomXPos = UnityEngine.Random.Range(_boundary.GetBottomCorner().x, _boundary.GetTopCorner().x);
-            var YPos = _boundary.GetTopCorner().y;
+            var randomXPos = UnityEngine.Random.Range(Boundary.Instance.GetBottomCorner().x, Boundary.Instance.GetTopCorner().x);
+            var YPos = Boundary.Instance.GetTopCorner().y;
             var randomEnemyinWave = UnityEngine.Random.Range(0, _indexesOfEnemiesAlive.Count);
 
             
@@ -255,8 +246,8 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawning == false) // && TotalEnemiesInCurrentWave > 0
         {
-            var randomXpos = UnityEngine.Random.Range(_boundary.GetBottomCorner().x, _boundary.GetTopCorner().x);
-            var Ypos = _boundary.GetTopCorner().y;
+            var randomXpos = UnityEngine.Random.Range(Boundary.Instance.GetBottomCorner().x, Boundary.Instance.GetTopCorner().x);
+            var Ypos = Boundary.Instance.GetTopCorner().y;
 
             int randomIndex; 
             

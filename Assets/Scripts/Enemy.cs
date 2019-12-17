@@ -15,7 +15,6 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] 
     private protected float _speed=4.0f;
-    private protected Boundary _boundary;
     private protected Player _player;
     [SerializeField]
     private protected int _scoreIfkilled = 10;
@@ -25,7 +24,6 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private GameObject _enemylaserPrefab;
     public bool IsbeingTargeted { get; set; }
-    private protected SpawnManager _spawnManager;
     [SerializeField]
     private protected ShotDirection _shotDirection;
    
@@ -33,14 +31,7 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
+       
 
         try
         {
@@ -77,14 +68,6 @@ public class Enemy : MonoBehaviour
         }
 
 
-        try
-        {
-            _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException(" SpawnManager", "cNULL, cannot find SpawnManager");
-        }
 
         StartCoroutine(ShootingRoutine());
 
@@ -98,11 +81,11 @@ public class Enemy : MonoBehaviour
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
-        if (transform.position.y <= _boundary.GetBottomCorner().y)
+        if (transform.position.y <= Boundary.Instance.GetBottomCorner().y)
         {
-            var randomX = UnityEngine.Random.Range(_boundary.GetBottomCorner().x, _boundary.GetTopCorner().x);
+            var randomX = UnityEngine.Random.Range(Boundary.Instance.GetBottomCorner().x, Boundary.Instance.GetTopCorner().x);
 
-            transform.position = new Vector3(randomX, _boundary.GetTopCorner().y, 0);
+            transform.position = new Vector3(randomX, Boundary.Instance.GetTopCorner().y, 0);
         }
     }
     
@@ -159,7 +142,7 @@ public class Enemy : MonoBehaviour
             _speed = 0;
             _explosionAudioSource.Play();
             Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
-            _spawnManager.TotalEnemiesInCurrentWave--;
+            SpawnManager.Instance.TotalEnemiesInCurrentWave--;
             Destroy(this.gameObject,2.0f);
             
         }
@@ -174,7 +157,7 @@ public class Enemy : MonoBehaviour
             _speed = 0;
             _explosionAudioSource.Play();
             Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
-            _spawnManager.TotalEnemiesInCurrentWave--;
+            SpawnManager.Instance.TotalEnemiesInCurrentWave--;
             Destroy(this.gameObject,2.0f);        
         }
     }

@@ -6,34 +6,15 @@ using System;
 public class Asteroid : MonoBehaviour
 {
     [SerializeField]
-    private Boundary _boundary;
     private float _rotationSpeed = 100f;
     [SerializeField]
     private GameObject _explosionPrefab;
     [SerializeField]
-    private SpawnManager _spawnManager;
     private AudioSource _explosionAudioSource;
 
     void Start()
     {
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
-
-
-        try
-        {
-            _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("SpawnManager", "NULL, cannot find SpawnManager");
-        }
+       
 
         try
         {
@@ -71,7 +52,7 @@ public class Asteroid : MonoBehaviour
             Destroy(collision.gameObject);
             Destroy (_explosionPrefab,2.5f);
             _explosionAudioSource.Play();
-            _spawnManager.StartSpawning();
+            SpawnManager.Instance.StartSpawning();
             Destroy(this.gameObject);
 
         }

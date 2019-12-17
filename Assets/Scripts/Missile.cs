@@ -14,7 +14,7 @@ public class Missile : MonoBehaviour
     private float _angleChangingSpeed =15f;
     [SerializeField]
     private float _speed=5f;
-    private Boundary _boundary;
+    
     
     void Start()
     {
@@ -33,18 +33,8 @@ public class Missile : MonoBehaviour
         }
 
         
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (System.Exception)
-        {
 
-            throw new ArgumentNullException("Boundary", "Boundary Manager could not be found");
-        }
-
-
-        _boundary.Offset = 5.0f;
+        Boundary.Instance.Offset = 5.0f;
     }
 
      void Update()
@@ -64,8 +54,8 @@ public class Missile : MonoBehaviour
 
     public void OutOfBoundsActions()
     {
-         if (transform.position.y > _boundary.GetTopCorner().y + _boundary.Offset || transform.position.y<_boundary.GetBottomCorner().y - _boundary.Offset ||
-             transform.position.x > _boundary.GetTopCorner().x + _boundary.Offset || transform.position.x<_boundary.GetBottomCorner().x - _boundary.Offset)
+         if (transform.position.y > Boundary.Instance.GetTopCorner().y + Boundary.Instance.Offset || transform.position.y<Boundary.Instance.GetBottomCorner().y - Boundary.Instance.Offset ||
+             transform.position.x > Boundary.Instance.GetTopCorner().x + Boundary.Instance.Offset || transform.position.x<Boundary.Instance.GetBottomCorner().x - Boundary.Instance.Offset)
          {
            
             if (_target != null)

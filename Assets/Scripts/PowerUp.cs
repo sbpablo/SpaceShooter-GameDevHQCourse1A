@@ -18,7 +18,6 @@ public class PowerUp : MonoBehaviour
 
     [SerializeField]
     private float _duration = 5.0f;
-    private Boundary _boundary;
     [SerializeField]
     private float _speed = 3;
     [SerializeField]
@@ -29,15 +28,7 @@ public class PowerUp : MonoBehaviour
   
     void Start()
     {
-        try 
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
-
+       
 
         try
         {
@@ -55,7 +46,7 @@ public class PowerUp : MonoBehaviour
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
-        if (transform.position.y<= _boundary.GetBottomCorner().y)
+        if (transform.position.y<= Boundary.Instance.GetBottomCorner().y)
         {
             Destroy(this.gameObject);
         }  

@@ -8,14 +8,7 @@ public class SmallFighterForGroup : Enemy
     private RamEnemy _parentRamEnemy;
     void Start()
     {
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
+       
 
         _anim = GetComponent<Animator>();
 

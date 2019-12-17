@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Boundary : MonoBehaviour
+public class Boundary : MonoSingleton<Boundary>
 {
     private float _camDistance;
     private Vector3 _bottomCorner;
