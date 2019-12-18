@@ -5,6 +5,7 @@ using System;
 
 
 
+
 public class SpeedCoroutineParameters 
 {
     public float CurrentSpeed { get; set; }
@@ -302,12 +303,12 @@ public class Player : MonoBehaviour
         if (_isTripleShotEnabled == false && _areMissilesEnabled == false)
         {
             FireLaser();
-            _laserAudioSource.Play();
+            
 
         } else if (_isTripleShotEnabled==true)
         {
             FireTripleShot();
-            _laserAudioSource.Play();
+            
 
         } else
         
@@ -319,14 +320,47 @@ public class Player : MonoBehaviour
     private void FireLaser()
     {
         var offset = new Vector3(0, 1, 0);
-        Instantiate(_laserPrefab, transform.position + offset, Quaternion.identity);
+
+        var laser = PoolManager.Instance.RetrieveObjectFromPool(_laserPrefab.gameObject.tag);
+        
+        if (laser != null)
+        {
+            laser.transform.position = transform.position + offset;
+            laser.SetActive(true);
+            _laserAudioSource.Play();
+        }
+        
+    
+
+        //Instantiate(_laserPrefab, transform.position + offset, Quaternion.identity);
     }
 
     private void FireTripleShot()
     {
         var offset = new Vector3(0, 1, 0);
-        Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+
+        //Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+        var tripleShot= PoolManager.Instance.RetrieveObjectFromPool(_tripleShotPrefab.gameObject.tag);
+       
+        if (tripleShot != null)
+        {
+            
+            tripleShot.transform.position = transform.position;
+            
+            foreach (Transform child  in tripleShot.transform)
+            {
+                child.gameObject.SetActive(true);
+            } 
+            
+            tripleShot.SetActive(true);
+            Debug.Log(tripleShot.transform.position);
+            _laserAudioSource.Play();
+            Debug.Log("TripleShot shot");
+            Debug.Log(tripleShot);
+        }
     }
+        
+       
 
     private void FireMissiles()
     {

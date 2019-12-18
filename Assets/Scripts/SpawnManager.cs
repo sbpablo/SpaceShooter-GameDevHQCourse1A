@@ -69,7 +69,6 @@ public class SpawnManager : MonoSingleton<SpawnManager>
     private int _totalWaves;
     [SerializeField]
     private int _currentWave;
-    private UIManager _uIManager;
     private List<int> _indexesOfEnemiesAlive = new List<int>();
     private AudioSource _nextWaveAudioSource;
     private AudioSource _playerHasWonAudioSorce;
@@ -88,16 +87,6 @@ public class SpawnManager : MonoSingleton<SpawnManager>
         catch (Exception)
         {
             throw new ArgumentNullException("Player", "NULL, cannot find Player");
-        }
-
-
-        try
-        {
-            _uIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("UIManager", "NULL, cannot find UIManager");
         }
 
 
@@ -168,7 +157,7 @@ public class SpawnManager : MonoSingleton<SpawnManager>
         _currentWave++;
         _nextWaveAudioSource.Play();
         _indexesOfEnemiesAlive.Clear();
-        _uIManager.StartCoroutine("ShowWaveFlickeringSecuence",_currentWave+1);
+        UIManager.Instance.StartCoroutine("ShowWaveFlickeringSecuence",_currentWave+1);
         
         TotalEnemiesInCurrentWave = 0;
         
@@ -283,7 +272,7 @@ public class SpawnManager : MonoSingleton<SpawnManager>
         _stopSpawning = true;
         _backGroundMusic.Stop();
         _playerHasWonAudioSorce.Play();
-        _uIManager.GameOverSecuence(true);
+        UIManager.Instance.GameOverSecuence(true);
         
     }
 

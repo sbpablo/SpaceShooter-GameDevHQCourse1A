@@ -29,7 +29,8 @@ public class EnemyLaser : MonoBehaviour
         if (transform.position.x < Boundary.Instance.GetBottomCorner().x || transform.position.x > Boundary.Instance.GetTopCorner().x ||
             transform.position.y < Boundary.Instance.GetBottomCorner().y || transform.position.y > Boundary.Instance.GetTopCorner().y )
         {
-            Destroy(this.gameObject);
+            // Destroy(this.gameObject);
+            this.gameObject.SetActive(false);
         }   
     }
 
@@ -38,7 +39,8 @@ public class EnemyLaser : MonoBehaviour
         if (collision.tag == "Player")
         {
             _player.Damage(this.gameObject.tag);
-            Destroy(this.gameObject);
+            //Destroy(this.gameObject);
+            this.gameObject.SetActive(false);
         }
     }
 }

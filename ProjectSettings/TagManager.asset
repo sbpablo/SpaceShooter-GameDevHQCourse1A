@@ -11,6 +11,7 @@ TagManager:
   - EnemyLaser
   - Missile
   - RamEnemy
+  - TripleShotLaser
   layers:
   - Default
   - TransparentFX

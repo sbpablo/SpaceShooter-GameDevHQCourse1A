@@ -7,12 +7,11 @@ public class Laser : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 10;
+    private Vector3 localPosition;
    
     void Start()
     {
-       
-
-        Boundary.Instance.Offset = 5.0f;
+        Boundary.Instance.Offset = 5.0f; 
     }
 
     void Update()
@@ -21,13 +20,24 @@ public class Laser : MonoBehaviour
 
         if (transform.position.y > Boundary.Instance.GetTopCorner().y + Boundary.Instance.Offset)
         {
-           
-            if (this.transform.parent!=null)
-                Destroy(transform.parent.gameObject);
-            else
+
+            if (transform.parent.gameObject.tag == "TripleShotLaser")
             {
-               Destroy(this.gameObject);
+                ResetLaserPrefabPosition();
             }
+
+             this.gameObject.SetActive(false);
         }
+    }
+
+    void ResetLaserPrefabPosition()
+    {
+        var parent = transform.parent.gameObject;
+
+        parent.SetActive(false);
+        parent.transform.GetChild(0).localPosition = new Vector3(0, 0.5f, 0);
+        parent.transform.GetChild(1).localPosition = new Vector3(-0.78f, -0.29f, 0);
+        parent.transform.GetChild(2).localPosition = new Vector3(0.78f, -0.29f, 0);
+
     }
 }

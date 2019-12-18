@@ -76,7 +76,9 @@ public class SmallFighterForGroup : Enemy
 
     private protected override void  OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Laser" || collision.tag == "Missile")
+        //La funcionalidad del laser o misil es la misma. Voy separarlos provisoriamente para usar el pool de laser.
+
+        if ( collision.tag == "Missile")
         {
 
             Destroy(collision.gameObject);
@@ -97,6 +99,29 @@ public class SmallFighterForGroup : Enemy
 
            
         }
+
+        if ( collision.tag == "Laser")
+        {
+
+            collision.gameObject.SetActive(false);
+
+            if (_player != null)
+            {
+                _player.SetScore(_scoreIfkilled);
+            }
+
+            // anim.SetTrigger("OnEnemyDeath");
+            _anim.Play("EnemyExplosion", 0, 0.16f);
+            _collider.enabled = false;
+            _speed = 0;
+            _explosionAudioSource.Play();
+            this.transform.parent = null;
+            _parentRamEnemy.OnChildsDamage();
+            Destroy(this.gameObject, 2.0f);
+
+        }
+
+
 
 
         if (collision.tag == "Player")

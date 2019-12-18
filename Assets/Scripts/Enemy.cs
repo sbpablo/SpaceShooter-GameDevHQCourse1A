@@ -100,12 +100,30 @@ public class Enemy : MonoBehaviour
                     var direction = _player.transform.position - transform.position;
                     var angle = Vector3.Angle(-transform.up, direction);
                     var sign = Mathf.Sign(Vector3.Cross(-transform.up, direction).z);
-                    var laser = Instantiate(_enemylaserPrefab, transform.position, Quaternion.Euler(0, 0, angle * sign));
-                    break;
+
+                    //var laser = Instantiate(_enemylaserPrefab, transform.position, Quaternion.Euler(0, 0, angle * sign));
+                     var laser = PoolManager.Instance.RetrieveObjectFromPool(_enemylaserPrefab.gameObject.tag);
+                     
+                    if (laser != null)
+                    {
+                        laser.transform.position = transform.position;
+                        laser.transform.rotation = Quaternion.Euler(0, 0, angle * sign);
+                        laser.SetActive(true);
+                    } 
+                    
+                  
+                     break;
 
                 case ShotDirection.vertical:
 
-                    var VerticalLaser = Instantiate(_enemylaserPrefab, transform.position, Quaternion.identity);
+                    //var VerticalLaser = Instantiate(_enemylaserPrefab, transform.position, Quaternion.identity);
+                    var verticalLaser= PoolManager.Instance.RetrieveObjectFromPool(_enemylaserPrefab.gameObject.tag);
+                    
+                    if (verticalLaser != null)
+                    {
+                        verticalLaser.transform.position = transform.position;
+                        verticalLaser.SetActive(true);
+                    }
                     break;
             }
         }
@@ -125,7 +143,30 @@ public class Enemy : MonoBehaviour
     }
     private protected virtual void OnTriggerEnter2D (Collider2D other)
     {
-        if (other.tag == "Laser" || other.tag=="Missile")
+        //La funcionalidad del laser o misil es la misma. Voy separarlos provisoriamente para usar el pool de laser.
+
+        if (other.tag == "Laser")
+        {
+            other.gameObject.SetActive(false);
+            Debug.Log("que carajo pasa " + this.gameObject.tag + "  " + other.gameObject.tag);
+            _collider.enabled = false;
+
+
+            if (_player != null)
+            {
+                _player.SetScore(_scoreIfkilled);
+            }
+            // anim.SetTrigger("OnEnemyDeath");
+            _anim.Play("EnemyExplosion", 0, 0.16f);
+            _speed = 0;
+            _explosionAudioSource.Play();
+            Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
+            SpawnManager.Instance.TotalEnemiesInCurrentWave--;
+            Destroy(this.gameObject, 2.0f);
+        }
+        
+        
+        if (other.tag=="Missile")
         {
             Destroy(other.gameObject);
             Debug.Log("que carajo pasa " + this.gameObject.tag + "  " + other.gameObject.tag);

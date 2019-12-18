@@ -48,8 +48,8 @@ public class Asteroid : MonoBehaviour
             {
                 Debug.LogError("Cannot instantiate explosion Prefab");
             }
-            
-            Destroy(collision.gameObject);
+
+            collision.gameObject.SetActive(false);
             Destroy (_explosionPrefab,2.5f);
             _explosionAudioSource.Play();
             SpawnManager.Instance.StartSpawning();
