@@ -75,6 +75,12 @@ public class SpawnManager : MonoSingleton<SpawnManager>
     private AudioSource _backGroundMusic;
     [SerializeField]
     private bool _waveInit;
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float _enemyShieldProbability;
+
+
+
 
 
     void Start()
@@ -199,6 +205,21 @@ public class SpawnManager : MonoSingleton<SpawnManager>
                     enemyInstance.transform.parent = _enemyContainer.transform;
                     enemyInstance.name = enemyInstance.name +" Wave: "+  (_currentWave + 1) +" Element: " + randomEnemyinWave 
                                          + " " + "Count: " + _waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemyCount();
+
+                    // Si el enemigo tiene escudo, encenderlo con probabilidad del 50%.
+
+                    var shield = enemyInstance.transform.Find("EnemyShield");
+
+                    if (shield!=null)
+                    {
+                        if (UnityEngine.Random.Range(0,100) < _enemyShieldProbability * 100)
+                        {
+                            Debug.Log("Entrando donde deberia activar el shield");
+                            shield.gameObject.SetActive(true);
+                        }
+                       
+                    }
+                    
                     _waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].DecreaseEnemyCount(1);
                     
                     if (_waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemyCount() == 0)

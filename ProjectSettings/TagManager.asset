@@ -12,6 +12,7 @@ TagManager:
   - Missile
   - RamEnemy
   - TripleShotLaser
+  - NegativeMovement
   layers:
   - Default
   - TransparentFX

@@ -103,7 +103,7 @@ public class Missile : MonoBehaviour
 
         foreach( var enemy in enemies)
         {
-            if (enemy.gameObject.name != "EnemyContainer" && enemy.gameObject.GetComponent<Enemy>().IsbeingTargeted==false)
+            if (enemy.gameObject.name != "EnemyContainer" && enemy.gameObject.name!="EnemyShield" && enemy.gameObject.GetComponent<Enemy>().IsbeingTargeted==false)
             {
                 var distance = Vector3.Distance(enemy.transform.position, currentPos);
                 if (distance < minDist)

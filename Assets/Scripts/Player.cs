@@ -59,6 +59,7 @@ public class Player : MonoBehaviour
     private AudioSource _explosionAudioSource;
     private AudioSource _missileAudioSource;
     private AudioSource _damageAudioSource;
+    private AudioSource _negativeMovementAudioSource;
     private CameraShake _cameraShake;
     [SerializeField]
     private GameObject _missilePrefab;
@@ -68,6 +69,7 @@ public class Player : MonoBehaviour
     private Animator _turnLeftAnimation;
     private Animator _turnRightAnimation;
     private Rigidbody2D _rb;
+    private bool _negativeMovement;
 
     void Start()
     {
@@ -113,6 +115,15 @@ public class Player : MonoBehaviour
         catch (Exception)
         {
             throw new ArgumentNullException("AudioManager or Explosion Sound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
+        try
+        {
+            _negativeMovementAudioSource = GameObject.Find("AudioManager").transform.Find("NegativeMovementSound").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or NegativeMovementSound", "NULL, cannot find Audio Manager/ Clip");
         }
 
         try
@@ -260,6 +271,11 @@ public class Player : MonoBehaviour
 
         var movement = new Vector3(horizontalImput, verticalImput, 0);
 
+        if (_negativeMovement)
+        {
+            movement *= -1;
+        }
+        
         _rb.velocity = (movement * _speed);
         
         //_rb.MovePosition(transform.position + movement * _speed * Time.fixedDeltaTime );
@@ -512,6 +528,20 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(duration);
         _isShieldEnabled = false;
         _shieldPrefab.SetActive(false);
+    }
+
+    public void OnNegativeMovementPowerUpCollection (float duration)
+    {
+        _negativeMovement = true;
+        _negativeMovementAudioSource.Play();
+        StartCoroutine(OnNegativeMovementCoolDownRoutine(duration));
+    }
+
+    IEnumerator OnNegativeMovementCoolDownRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        _negativeMovement = false;
+        _negativeMovementAudioSource.Stop();
     }
 
     public void OnAmmoPowerUpCollection()

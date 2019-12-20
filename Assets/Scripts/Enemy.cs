@@ -26,7 +26,9 @@ public class Enemy : MonoBehaviour
     public bool IsbeingTargeted { get; set; }
     [SerializeField]
     private protected ShotDirection _shotDirection;
-   
+    
+    public  GameObject Shield { get; set; }
+
 
 
     void Start()
@@ -65,6 +67,13 @@ public class Enemy : MonoBehaviour
         catch (Exception)
         {
             throw new ArgumentNullException(" Audio MAnager / Explosion Sound", "NULL, cannot find the AudioManager or  audio source of enemy explosion");
+        }
+
+        if (transform.Find("EnemyShield"))
+        {
+            Shield = transform.Find("EnemyShield").gameObject;
+            Debug.Log($"Encontre algun shield!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! en {this.gameObject.name}" +
+                $" y es {Shield.name}");
         }
 
 
@@ -147,22 +156,33 @@ public class Enemy : MonoBehaviour
 
         if (other.tag == "Laser")
         {
-            other.gameObject.SetActive(false);
-            Debug.Log("que carajo pasa " + this.gameObject.tag + "  " + other.gameObject.tag);
-            _collider.enabled = false;
-
-
-            if (_player != null)
+            
+            if (Shield==null || Shield.activeSelf==false)
             {
-                _player.SetScore(_scoreIfkilled);
+               
+                Debug.Log("que carajo pasa " + this.gameObject.tag + "  " + other.gameObject.tag);
+                _collider.enabled = false;
+
+
+                if (_player != null)
+                {
+                    _player.SetScore(_scoreIfkilled);
+                }
+                // anim.SetTrigger("OnEnemyDeath");
+                _anim.Play("EnemyExplosion", 0, 0.16f);
+                _speed = 0;
+                _explosionAudioSource.Play();
+                Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
+                SpawnManager.Instance.TotalEnemiesInCurrentWave--;
+                Destroy(this.gameObject, 2.0f);
+
             }
-            // anim.SetTrigger("OnEnemyDeath");
-            _anim.Play("EnemyExplosion", 0, 0.16f);
-            _speed = 0;
-            _explosionAudioSource.Play();
-            Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
-            SpawnManager.Instance.TotalEnemiesInCurrentWave--;
-            Destroy(this.gameObject, 2.0f);
+            else
+            {
+                Shield.SetActive(false);
+            }
+
+            other.gameObject.SetActive(false);
         }
         
         
@@ -184,6 +204,12 @@ public class Enemy : MonoBehaviour
             _explosionAudioSource.Play();
             Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
             SpawnManager.Instance.TotalEnemiesInCurrentWave--;
+
+            if (Shield != null && Shield.activeSelf == true)
+            {
+                Shield.SetActive(false);
+            }
+
             Destroy(this.gameObject,2.0f);
             
         }
@@ -199,7 +225,16 @@ public class Enemy : MonoBehaviour
             _explosionAudioSource.Play();
             Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
             SpawnManager.Instance.TotalEnemiesInCurrentWave--;
-            Destroy(this.gameObject,2.0f);        
+            
+
+            if (Shield != null && Shield.activeSelf == true)
+            {
+                Shield.SetActive(false);
+            }
+
+            Destroy(this.gameObject, 2.0f);
         }
     }
+
+   
 }

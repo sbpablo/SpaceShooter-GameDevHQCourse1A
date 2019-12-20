@@ -10,7 +10,8 @@ public enum PowerUpType
     Shield,
     Ammo,
     Life,
-    Missile
+    Missile,
+    NegativeMovement,
 }
 
 public class PowerUp : MonoBehaviour
@@ -72,7 +73,12 @@ public class PowerUp : MonoBehaviour
             if (player != null)
             {
 
-                _powerUpAudioSource.Play();
+                if (gameObject.tag != "NegativeMovement")
+                {
+                    _powerUpAudioSource.Play();
+                }
+                
+                
 
                 switch ((int) this._type)
                 {
@@ -95,6 +101,9 @@ public class PowerUp : MonoBehaviour
                         break;
                     case 5:
                         player.OnMissilePowerUpCollection(_duration);
+                        break;
+                    case 6:
+                        player.OnNegativeMovementPowerUpCollection(_duration);
                         break;
                 }
             }
