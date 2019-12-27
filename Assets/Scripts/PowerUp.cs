@@ -24,8 +24,12 @@ public class PowerUp : MonoBehaviour
     [SerializeField]
     private PowerUpType _type;
     private AudioSource _powerUpAudioSource;
+    private AudioSource _powerUpDestroyedAudioSource;
     [SerializeField]
     private float _spawnWeight;
+    //public static event Action<Transform> OnPowerUpOnScreen;
+    public static event Action <Transform> OnPowerUpOnScreen;
+   
   
     void Start()
     {
@@ -40,12 +44,26 @@ public class PowerUp : MonoBehaviour
             throw new ArgumentNullException("AudioManager or PowerUp Sound", "NULL, cannot find Audio Manager/ Clip");
         }
 
+        try
+        {
+            _powerUpDestroyedAudioSource = GameObject.Find("AudioManager").transform.Find("PowerUpDestroyed").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or PowerUpDestroyed Sound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
+        
+        if (this.gameObject.tag!="NegativeMovement")
+        {
+            OnPowerUp();
+        }
 
         if (transform.position.y<= Boundary.Instance.GetBottomCorner().y)
         {
@@ -61,6 +79,31 @@ public class PowerUp : MonoBehaviour
     public float PowerUpDuration()
     {
         return _duration;
+    }
+
+    private  void OnPowerUp()
+    {
+        if (OnPowerUpOnScreen != null)
+
+        {
+            OnPowerUpOnScreen(this.gameObject.transform);
+        }
+    }
+
+    private IEnumerator ScaleCoroutine()
+    {
+
+        _powerUpDestroyedAudioSource.Play();
+        
+        for (float i= transform.localScale.x; i>=0.0f; i-= 0.1f)
+        {
+            Debug.Log(transform.localScale);
+            transform.localScale -= new Vector3(0.1f,0.1f ,0.1f);
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        
+        Destroy(this.gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -108,6 +151,14 @@ public class PowerUp : MonoBehaviour
                 }
             }
             Destroy(this.gameObject);
+        }
+
+        if (collision.tag == "EnemyLaser")
+        {
+            this.GetComponent<Collider2D>().enabled = false;
+            StartCoroutine(ScaleCoroutine());
+            collision.gameObject.SetActive(false);
+
         }
     }
 }

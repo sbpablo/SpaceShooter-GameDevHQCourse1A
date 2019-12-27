@@ -57,7 +57,7 @@ public class RamEnemy : Enemy
             var direction = _target.position - transform.position;
             direction.Normalize();
             float angle = Vector3.Angle(transform.up, direction);
-            float sign = Vector3.Cross(transform.up, direction).z;
+            float sign =   Vector3.Cross(transform.up, direction).z;
         
             _rb.MoveRotation(_rb.rotation + angle*sign*_angleChangingSpeed* Time.fixedDeltaTime);
         }

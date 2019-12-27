@@ -13,6 +13,13 @@ public class Enemy : MonoBehaviour
         AtEnemy
     };
 
+    public enum AggresionLevel
+    {
+        None,  // Do not follow player
+        Medium, // Follow Player only if the distance < Certain Amount
+        Max // Once the enemy starts the chace, it will continue regardless of the distance
+    };
+
     [SerializeField] 
     private protected float _speed=4.0f;
     private protected Player _player;
@@ -26,10 +33,42 @@ public class Enemy : MonoBehaviour
     public bool IsbeingTargeted { get; set; }
     [SerializeField]
     private protected ShotDirection _shotDirection;
-    
+    [SerializeField]
+    private protected AggresionLevel _aggresion;
+    [SerializeField]
+    private protected float _distanceToStartChase=8;
+    [SerializeField]
+    private protected float _chaseSpeedMultiplier = 3f;
+    private bool _hasStartedChasing;
+    [SerializeField]
+    private protected bool _attacksPowerUps;
+    [SerializeField]
+    [Range(0,1)]
+    private float  _attackPowerUpsProbability;
+    [SerializeField]
+    private protected float _attackPUDistance;
+    [SerializeField]
+    private protected float _attackPUAngle;
+
+    private bool _hasCheckPowerUpAsTarget;
+
+
+
+
+
     public  GameObject Shield { get; set; }
 
 
+
+    private void OnEnable()
+    {
+        PowerUp.OnPowerUpOnScreen += OnPowerUp;
+    }
+
+    private void OnDisable()
+    {
+        PowerUp.OnPowerUpOnScreen -= OnPowerUp;
+    }
 
     void Start()
     {
@@ -87,8 +126,71 @@ public class Enemy : MonoBehaviour
     }
 
    private protected virtual void  CalculateMovement()
-    {
-        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+   {
+
+        
+
+        switch (_aggresion)
+        {
+
+            case AggresionLevel.None:
+                transform.Translate(Vector3.down * _speed * Time.deltaTime);
+                break;
+
+            case AggresionLevel.Medium:
+
+                if (_player != null)
+                {
+
+                    var direction = _player.transform.position - transform.position;
+                    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90;
+
+                    if (direction.magnitude > _distanceToStartChase)
+                    {
+
+                        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.identity, 100 * Time.deltaTime);
+                        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+                    }
+                    else
+                    {
+                        RotateAndTranslate(angle);
+
+                    }
+                }
+                
+               
+                break;
+
+            case AggresionLevel.Max:
+
+                if (_player != null)
+                {
+                    var direction2 = _player.transform.position - transform.position;
+                    float angle2 = Mathf.Atan2(direction2.y, direction2.x) * Mathf.Rad2Deg + 90;
+
+
+                    if (direction2.magnitude <= _distanceToStartChase && _hasStartedChasing == false)
+                    {
+                        _hasStartedChasing = true;
+
+                    }
+                    else
+                    {
+                        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+                    }
+
+
+                    if (_hasStartedChasing)
+                    {
+                        RotateAndTranslate(angle2);
+                    }
+
+                }
+
+
+                break; 
+        }
+        
 
         if (transform.position.y <= Boundary.Instance.GetBottomCorner().y)
         {
@@ -96,6 +198,15 @@ public class Enemy : MonoBehaviour
 
             transform.position = new Vector3(randomX, Boundary.Instance.GetTopCorner().y, 0);
         }
+
+    }
+
+    private void RotateAndTranslate(float angle)
+    {
+        Quaternion rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, 100 * Time.deltaTime);
+        transform.Translate(Vector3.down * _speed * _chaseSpeedMultiplier * Time.deltaTime);
+        Debug.Log($"Speed:{_speed}, ChaseSpeed:{_chaseSpeedMultiplier}, Sum: {_speed*_chaseSpeedMultiplier}");
     }
     
     public void Shoot (ShotDirection dir)
@@ -131,6 +242,7 @@ public class Enemy : MonoBehaviour
                     if (verticalLaser != null)
                     {
                         verticalLaser.transform.position = transform.position;
+                        verticalLaser.transform.rotation = this.transform.rotation;
                         verticalLaser.SetActive(true);
                     }
                     break;
@@ -234,6 +346,41 @@ public class Enemy : MonoBehaviour
 
             Destroy(this.gameObject, 2.0f);
         }
+    }
+
+    private void OnPowerUp(Transform transf)
+    {
+
+        var direction = transf.position - this.transform.position;
+        var angle = Vector3.Angle(-transform.up, direction);
+        var sign = Mathf.Sign(Vector3.Cross(-transform.up, direction).z);
+
+        if (_attacksPowerUps && _hasCheckPowerUpAsTarget==false && direction.magnitude<=_attackPUDistance && angle<=_attackPUAngle)
+        {
+            _hasCheckPowerUpAsTarget =true;
+            
+            var probability = UnityEngine.Random.Range(0, 100);
+
+            if (probability < _attackPowerUpsProbability * 100)
+            {
+
+                //var laser = Instantiate(_enemylaserPrefab, transform.position, Quaternion.Euler(0, 0, angle * sign));
+                var laser = PoolManager.Instance.RetrieveObjectFromPool(_enemylaserPrefab.gameObject.tag);
+
+                if (laser != null)
+                {
+                    laser.transform.position = transform.position;
+                    laser.transform.rotation = Quaternion.Euler(0, 0, (angle-10) * sign);
+                    laser.SetActive(true);
+                    Debug.Log($"Hay un powerup ubicado en:{transform.localPosition} y lo voy a atacar ya que mi probabilidad es {probability}, la distancia es {direction.magnitude}" +
+                        $" y el angulo es {angle}");
+                }
+            }
+            
+          
+        }
+        
+       
     }
 
    

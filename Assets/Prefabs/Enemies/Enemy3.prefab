@@ -250,6 +250,13 @@ MonoBehaviour:
   _enemylaserPrefab: {fileID: 4886664318006039583, guid: 4a906dbdf2bc0c44a8effc53ddd66395,
     type: 3}
   _shotDirection: 1
+  _aggresion: 2
+  _distanceToStartChase: 6
+  _chaseSpeedMultiplier: 2
+  _attacksPowerUps: 1
+  _attackPowerUpsProbability: 1
+  _attackPUDistance: 10
+  _attackPUAngle: 35
 --- !u!1001 &1326483658
 PrefabInstance:
   m_ObjectHideFlags: 0

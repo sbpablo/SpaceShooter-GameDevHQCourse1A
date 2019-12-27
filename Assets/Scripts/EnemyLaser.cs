@@ -8,6 +8,9 @@ public class EnemyLaser : MonoBehaviour
     [SerializeField]
     private float _speed=10;
     private Player _player;
+
+
+    
     void Start()
     {
 

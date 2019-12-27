@@ -79,6 +79,8 @@ public class SpawnManager : MonoSingleton<SpawnManager>
     [Range(0f, 1f)]
     private float _enemyShieldProbability;
 
+    
+
 
 
 
@@ -229,7 +231,7 @@ public class SpawnManager : MonoSingleton<SpawnManager>
                 }
             }
             
-            if (TotalEnemiesInCurrentWave == 0)
+            if (TotalEnemiesInCurrentWave <= 0)
             {
                 if (_currentWave+1 < _waves.Length)
                 {
@@ -314,5 +316,12 @@ public class SpawnManager : MonoSingleton<SpawnManager>
         }
         return _powerUpWeights.Length - 1;   
     }
+
+
+   
+
+
+
+    
 
 }
