@@ -125,7 +125,10 @@ public class Enemy : MonoBehaviour
         CalculateMovement();
     }
 
-   private protected virtual void  CalculateMovement()
+   
+    
+    
+    private protected virtual void  CalculateMovement()
    {
 
         
@@ -376,11 +379,7 @@ public class Enemy : MonoBehaviour
                         $" y el angulo es {angle}");
                 }
             }
-            
-          
         }
-        
-       
     }
 
    

@@ -70,6 +70,20 @@ public class Player : MonoBehaviour
     private Animator _turnRightAnimation;
     private Rigidbody2D _rb;
     private bool _negativeMovement;
+    [SerializeField]
+    private float _pickUpCollectSpeed = 5;
+
+
+    private void OnEnable()
+    {
+        PowerUp.OnPowerUpOnScreen += PickupCollect;
+    }
+
+    private void OnDisable()
+    {
+        PowerUp.OnPowerUpOnScreen -= PickupCollect;
+    }
+
 
     void Start()
     {
@@ -200,7 +214,6 @@ public class Player : MonoBehaviour
            
         }
 
-
         if (!_isSpeedEnabled)
         {
             if (Input.GetKey(KeyCode.LeftShift))
@@ -227,6 +240,20 @@ public class Player : MonoBehaviour
         }
 
          UIManager.Instance.ShowThruster(_speed);    
+    }
+
+
+    private void PickupCollect(Transform obj)
+    {
+        if (Input.GetKey(KeyCode.C))
+        {
+            var direction = this.transform.position - obj.transform.position;
+            direction.Normalize();
+            obj.transform.Translate(direction * _pickUpCollectSpeed* Time.deltaTime);
+        }
+        
+       
+
     }
     IEnumerator SpeedIncrease( SpeedCoroutineParameters parameters )
     {
