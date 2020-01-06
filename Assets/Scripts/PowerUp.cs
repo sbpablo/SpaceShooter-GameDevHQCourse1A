@@ -27,7 +27,6 @@ public class PowerUp : MonoBehaviour
     private AudioSource _powerUpDestroyedAudioSource;
     [SerializeField]
     private float _spawnWeight;
-    //public static event Action<Transform> OnPowerUpOnScreen;
     public static event Action <Transform> OnPowerUpOnScreen;
    
   

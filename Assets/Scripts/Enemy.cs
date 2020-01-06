@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 
 
@@ -49,16 +50,20 @@ public class Enemy : MonoBehaviour
     private protected float _attackPUDistance;
     [SerializeField]
     private protected float _attackPUAngle;
-
+   [SerializeField]
+    private bool _canAvoidLaser;
+    [SerializeField]
+    [Range(0, 1)]
+    private float _avoidLaserProb;
     private bool _hasCheckPowerUpAsTarget;
+    private SpriteRenderer _spriteRenderer;
+    private float _avoidDistance;
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float _enemyShieldProbability;
+    private  GameObject Shield { get; set; }
 
-
-
-
-
-    public  GameObject Shield { get; set; }
-
-
+ 
 
     private void OnEnable()
     {
@@ -111,27 +116,94 @@ public class Enemy : MonoBehaviour
         if (transform.Find("EnemyShield"))
         {
             Shield = transform.Find("EnemyShield").gameObject;
-            Debug.Log($"Encontre algun shield!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! en {this.gameObject.name}" +
-                $" y es {Shield.name}");
         }
 
 
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (_spriteRenderer == null)
+        {
+            Debug.LogError("Enemy does not have a SpriteRenderer Component");
+        }
+
+        _avoidDistance = _spriteRenderer.bounds.size.x * 3;
+
+        ShieldActivation();
 
         StartCoroutine(ShootingRoutine());
 
+        
+        if (_canAvoidLaser)
+        {
+            StartCoroutine(CheckLaserProximity(0.2f));
+        }
+     
     }
     void Update()
     {
         CalculateMovement();
     }
 
-   
+
+    private void ShieldActivation()
+    {
+        if (Shield != null)
+        {
+            if (UnityEngine.Random.Range(0, 100) < _enemyShieldProbability * 100)
+            {
+                Shield.gameObject.SetActive(true);
+            }
+
+        }
+    }
+
+    IEnumerator CheckLaserProximity(float seconds)
+    {
+
+        while (true)
+        {
+            var lasers = PoolManager.Instance.PooledObjects("Laser");
+
+            foreach (var laser in lasers)
+            {
+          
+                var direction = laser.transform.position - transform.position;
+
+                var angle = Vector3.SignedAngle(direction, -transform.up, Vector3.forward);
+
+                if (Vector3.Distance(laser.transform.position, transform.position) < 5 && Mathf.Abs(angle) < 20)
+                {
+                   
+                    var prob = UnityEngine.Random.Range(0, 100);
+
+                    if (prob <= _avoidLaserProb * 100)
+                    {
+                        AvoidanceManeuver(angle);
+                    }
+                }
+            }
+
+            yield return new WaitForSeconds(seconds);
+        }
+    }
+
     
-    
+    private void AvoidanceManeuver (float angle)
+    {
+
+        if (angle <= 0)
+        {
+          transform.Translate(Vector3.left * _avoidDistance * 5 * Time.deltaTime);
+        }
+        else
+        {
+           transform.Translate(Vector3.right * _avoidDistance * 5 * Time.deltaTime);
+        }
+    }
+        
     private protected virtual void  CalculateMovement()
    {
 
-        
 
         switch (_aggresion)
         {
@@ -157,11 +229,9 @@ public class Enemy : MonoBehaviour
                     else
                     {
                         RotateAndTranslate(angle);
-
                     }
                 }
                 
-               
                 break;
 
             case AggresionLevel.Max:
@@ -171,30 +241,24 @@ public class Enemy : MonoBehaviour
                     var direction2 = _player.transform.position - transform.position;
                     float angle2 = Mathf.Atan2(direction2.y, direction2.x) * Mathf.Rad2Deg + 90;
 
-
                     if (direction2.magnitude <= _distanceToStartChase && _hasStartedChasing == false)
                     {
                         _hasStartedChasing = true;
-
                     }
                     else
                     {
                         transform.Translate(Vector3.down * _speed * Time.deltaTime);
                     }
 
-
                     if (_hasStartedChasing)
                     {
                         RotateAndTranslate(angle2);
                     }
-
                 }
-
 
                 break; 
         }
         
-
         if (transform.position.y <= Boundary.Instance.GetBottomCorner().y)
         {
             var randomX = UnityEngine.Random.Range(Boundary.Instance.GetBottomCorner().x, Boundary.Instance.GetTopCorner().x);
@@ -209,12 +273,11 @@ public class Enemy : MonoBehaviour
         Quaternion rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, 100 * Time.deltaTime);
         transform.Translate(Vector3.down * _speed * _chaseSpeedMultiplier * Time.deltaTime);
-        Debug.Log($"Speed:{_speed}, ChaseSpeed:{_chaseSpeedMultiplier}, Sum: {_speed*_chaseSpeedMultiplier}");
     }
     
     public void Shoot (ShotDirection dir)
     {
-        if (_player != null)
+        if (_player != null && _collider.enabled==true)
         { 
             switch (dir)
             {
@@ -234,7 +297,6 @@ public class Enemy : MonoBehaviour
                         laser.SetActive(true);
                     } 
                     
-                  
                      break;
 
                 case ShotDirection.vertical:
@@ -275,9 +337,7 @@ public class Enemy : MonoBehaviour
             if (Shield==null || Shield.activeSelf==false)
             {
                
-                Debug.Log("que carajo pasa " + this.gameObject.tag + "  " + other.gameObject.tag);
                 _collider.enabled = false;
-
 
                 if (_player != null)
                 {
@@ -287,10 +347,8 @@ public class Enemy : MonoBehaviour
                 _anim.Play("EnemyExplosion", 0, 0.16f);
                 _speed = 0;
                 _explosionAudioSource.Play();
-                Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
                 SpawnManager.Instance.TotalEnemiesInCurrentWave--;
                 Destroy(this.gameObject, 2.0f);
-
             }
             else
             {
@@ -304,10 +362,8 @@ public class Enemy : MonoBehaviour
         if (other.tag=="Missile")
         {
             Destroy(other.gameObject);
-            Debug.Log("que carajo pasa " + this.gameObject.tag + "  " + other.gameObject.tag);
             _collider.enabled = false;
         
-            
 
             if (_player != null)
             {
@@ -317,7 +373,6 @@ public class Enemy : MonoBehaviour
             _anim.Play("EnemyExplosion", 0, 0.16f);
             _speed = 0;
             _explosionAudioSource.Play();
-            Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
             SpawnManager.Instance.TotalEnemiesInCurrentWave--;
 
             if (Shield != null && Shield.activeSelf == true)
@@ -338,7 +393,6 @@ public class Enemy : MonoBehaviour
             _collider.enabled = false;
             _speed = 0;
             _explosionAudioSource.Play();
-            Debug.Log("I was hitted: " + this.gameObject.name + " by: " + other.gameObject.tag);
             SpawnManager.Instance.TotalEnemiesInCurrentWave--;
             
 
@@ -375,8 +429,6 @@ public class Enemy : MonoBehaviour
                     laser.transform.position = transform.position;
                     laser.transform.rotation = Quaternion.Euler(0, 0, (angle-10) * sign);
                     laser.SetActive(true);
-                    Debug.Log($"Hay un powerup ubicado en:{transform.localPosition} y lo voy a atacar ya que mi probabilidad es {probability}, la distancia es {direction.magnitude}" +
-                        $" y el angulo es {angle}");
                 }
             }
         }

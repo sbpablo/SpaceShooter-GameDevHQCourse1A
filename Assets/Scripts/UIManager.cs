@@ -44,7 +44,6 @@ public class UIManager : MonoSingleton <UIManager>
     public void ShowThruster (float speed)
     {
         _speedSlider.value = speed;
-
     }
          
     public void ShowScore (int score)
@@ -119,7 +118,6 @@ public class UIManager : MonoSingleton <UIManager>
         
     }
 
-      
     IEnumerator AmmoCountFlickering()
     {
 
@@ -129,7 +127,6 @@ public class UIManager : MonoSingleton <UIManager>
         {
             _ammoText.gameObject.SetActive(!_ammoText.gameObject.activeSelf);
             yield return new  WaitForSeconds(0.5f);
-            
         }
 
     }

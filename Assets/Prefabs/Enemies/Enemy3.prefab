@@ -245,18 +245,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d210f76ae5e4dcb4dbb8445a3f705635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 2
+  _speed: 5
   _scoreIfkilled: 10
   _enemylaserPrefab: {fileID: 4886664318006039583, guid: 4a906dbdf2bc0c44a8effc53ddd66395,
     type: 3}
   _shotDirection: 1
   _aggresion: 2
   _distanceToStartChase: 6
-  _chaseSpeedMultiplier: 2
+  _chaseSpeedMultiplier: 1
   _attacksPowerUps: 1
   _attackPowerUpsProbability: 1
   _attackPUDistance: 10
   _attackPUAngle: 35
+  _canAvoidLaser: 0
+  _enemyShieldProbability: 0.5
 --- !u!1001 &1326483658
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -75,16 +75,18 @@ public class SpawnManager : MonoSingleton<SpawnManager>
     private AudioSource _backGroundMusic;
     [SerializeField]
     private bool _waveInit;
-    [SerializeField]
-    [Range(0f, 1f)]
-    private float _enemyShieldProbability;
-
-    
+    private bool _lastBossDefetead;
 
 
+    private void OnEnable()
+    {
+        Boss.Destroyed += LastBossDefeated;
+    }
 
-
-
+    private void OnDisable()
+    {
+        Boss.Destroyed -= LastBossDefeated;
+    }
     void Start()
     {
 
@@ -208,19 +210,6 @@ public class SpawnManager : MonoSingleton<SpawnManager>
                     enemyInstance.name = enemyInstance.name +" Wave: "+  (_currentWave + 1) +" Element: " + randomEnemyinWave 
                                          + " " + "Count: " + _waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].GetEnemyCount();
 
-                    // Si el enemigo tiene escudo, encenderlo con probabilidad del 50%.
-
-                    var shield = enemyInstance.transform.Find("EnemyShield");
-
-                    if (shield!=null)
-                    {
-                        if (UnityEngine.Random.Range(0,100) < _enemyShieldProbability * 100)
-                        {
-                            Debug.Log("Entrando donde deberia activar el shield");
-                            shield.gameObject.SetActive(true);
-                        }
-                       
-                    }
                     
                     _waves[_currentWave].GetEnemiesInWave()[_indexesOfEnemiesAlive[randomEnemyinWave]].DecreaseEnemyCount(1);
                     
@@ -237,15 +226,11 @@ public class SpawnManager : MonoSingleton<SpawnManager>
                 {
                     StartWave();
                 }
-                else
+                else  if (_lastBossDefetead)
                 {
                     OnPlayerVictory();
                 }
             }
-
-            Debug.Log("TotalEnemiesInCurrentWave: " + TotalEnemiesInCurrentWave);
-            Debug.Log("_currentWave: " + _currentWave);
-            Debug.Log("_waves.Length:" + _waves.Length);
             
             yield return new WaitForSeconds(_enemySpawnTime);
 
@@ -317,11 +302,11 @@ public class SpawnManager : MonoSingleton<SpawnManager>
         return _powerUpWeights.Length - 1;   
     }
 
+    public bool LastBossDefeated()
+    {
+        _lastBossDefetead = true;
+        return _lastBossDefetead;
+    }
 
-   
-
-
-
-    
 
 }

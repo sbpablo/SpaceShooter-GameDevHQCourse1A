@@ -54,6 +54,14 @@ MonoBehaviour:
   _scoreIfkilled: 50
   _enemylaserPrefab: {fileID: 0}
   _shotDirection: 0
+  _aggresion: 0
+  _distanceToStartChase: 8
+  _chaseSpeedMultiplier: 3
+  _attacksPowerUps: 0
+  _attackPowerUpsProbability: 0
+  _attackPUDistance: 0
+  _attackPUAngle: 0
+  _canAvoidLaser: 0
   _angleChangingSpeed: 1
 --- !u!50 &2104252075
 Rigidbody2D:

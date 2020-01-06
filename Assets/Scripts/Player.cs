@@ -60,6 +60,7 @@ public class Player : MonoBehaviour
     private AudioSource _missileAudioSource;
     private AudioSource _damageAudioSource;
     private AudioSource _negativeMovementAudioSource;
+    private AudioSource _alarmSound;
     private CameraShake _cameraShake;
     [SerializeField]
     private GameObject _missilePrefab;
@@ -77,11 +78,13 @@ public class Player : MonoBehaviour
     private void OnEnable()
     {
         PowerUp.OnPowerUpOnScreen += PickupCollect;
+        Boss.SceneArriving += AlarmSound;
     }
 
     private void OnDisable()
     {
         PowerUp.OnPowerUpOnScreen -= PickupCollect;
+        Boss.SceneArriving -= AlarmSound;
     }
 
 
@@ -140,6 +143,16 @@ public class Player : MonoBehaviour
             throw new ArgumentNullException("AudioManager or NegativeMovementSound", "NULL, cannot find Audio Manager/ Clip");
         }
 
+
+        try
+        {
+            _alarmSound = GameObject.Find("AudioManager").transform.Find("AlarmSound").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or _alarmSound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
         try
         {
             _cameraShake = GameObject.FindWithTag("MainCamera").GetComponent<CameraShake>();
@@ -176,35 +189,14 @@ public class Player : MonoBehaviour
 
     }
 
-
+    
     private void FixedUpdate()
     {
         CalculateMovement();
     }
     void Update()
     {
-       /* if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            _turnLeftAnimation.SetInteger("Tilt", -1);
-        }
-
-        if (Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            _turnLeftAnimation.SetInteger("Tilt", 0);
-        }
-
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            _turnLeftAnimation.SetInteger("Tilt", -1);
-        }
-
-        if (Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            _turnLeftAnimation.SetInteger("Tilt", 0);
-        }
-        */
-
-       
+      
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire && _ammoCount>0)
         {
@@ -373,8 +365,7 @@ public class Player : MonoBehaviour
             _laserAudioSource.Play();
         }
         
-    
-
+   
         //Instantiate(_laserPrefab, transform.position + offset, Quaternion.identity);
     }
 
@@ -396,10 +387,8 @@ public class Player : MonoBehaviour
             } 
             
             tripleShot.SetActive(true);
-            Debug.Log(tripleShot.transform.position);
             _laserAudioSource.Play();
-            Debug.Log("TripleShot shot");
-            Debug.Log(tripleShot);
+            
         }
     }
         
@@ -476,7 +465,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if (sourceOfDamage == "Enemy")   //The enemy ship destroys the shield completely.
+            if (sourceOfDamage == "Enemy" || sourceOfDamage =="Boss")   //The enemy ship or a boss destroys the shield completely.
             {
                 StopCoroutine("ShieldCoolDownRoutine");
                 _isShieldEnabled = false;
@@ -627,5 +616,13 @@ public class Player : MonoBehaviour
     public int GetLives()
     {
         return _lives;
+    }
+
+
+    private void AlarmSound()
+    {
+        _alarmSound.Play();
+        // _alarmSound.SetScheduledEndTime(5);
+        _alarmSound.SetScheduledEndTime(AudioSettings.dspTime + 6.5);
     }
 }

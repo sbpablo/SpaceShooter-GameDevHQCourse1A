@@ -55,8 +55,7 @@ public class PoolManager : MonoSingleton<PoolManager>
                 {
                     Debug.LogError("Prefabs for ObjectPooling not found");
                 }
-
-                
+            
             }
 
         }
@@ -84,9 +83,6 @@ public class PoolManager : MonoSingleton<PoolManager>
             else return null;
 
         } 
-
-   
-
     }
 
     public void AddObjectToPool (GameObject obj)
@@ -106,5 +102,10 @@ public class PoolManager : MonoSingleton<PoolManager>
 
     }
 
+    public List<GameObject> PooledObjects (string tag)
+    {
+
+        return _pooledObjects.Where(t => t.tag == tag && t.activeSelf==true).ToList();
+    }
 
 }

@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3948698}
   - component: {fileID: 3948697}
+  - component: {fileID: 3585146459374465287}
   m_Layer: 0
-  m_Name: PlayerHurtRight
+  m_Name: RigthEngine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,6 +81,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &3585146459374465287
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3948696}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8168684cb6767804abc4115fc51bcd1b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &149400214
 GameObject:
   m_ObjectHideFlags: 0
@@ -190,8 +210,9 @@ GameObject:
   m_Component:
   - component: {fileID: 779040249}
   - component: {fileID: 779040248}
+  - component: {fileID: 2333246449234963238}
   m_Layer: 0
-  m_Name: PlayerHurtLeft
+  m_Name: LeftEngine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -260,6 +281,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &2333246449234963238
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779040247}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8168684cb6767804abc4115fc51bcd1b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1057090171250050077
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,6 +312,8 @@ GameObject:
   - component: {fileID: 1057090171250050079}
   - component: {fileID: 1057090171250050076}
   - component: {fileID: 1057090171250050081}
+  - component: {fileID: 219982748}
+  - component: {fileID: 219982752}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -334,7 +376,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -596320847
   m_SortingLayer: 2
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 1b4a8fdd39d3a45d0a9ee484ad6800ec, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -358,9 +400,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb875b2ee42bd8b4394e3c3292c4c38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 10
-  _speedMultiplier: 1.5
-  _speedIncreasedRate: 2
+  _speed: 8
+  _speedMultiplier: 2
+  _speedIncreasedRate: 1.5
   _laserPrefab: {fileID: 4886664318006039583, guid: 7791e3472970fcc4aa162fa2dca934e8,
     type: 3}
   _tripleShotPrefab: {fileID: 6206627033295701963, guid: ccc56714dab8cf44082777a25a061b76,
@@ -369,10 +411,13 @@ MonoBehaviour:
   _lives: 3
   _shieldPrefab: {fileID: 669121664}
   _shieldLaserHitEndurance: 3
-  _maxAmmoCount: 15
+  _maxAmmoCount: 30
   _ammoCount: 0
-  _explosionPrefab: {fileID: 0}
-  _missilePrefab: {fileID: 0}
+  _explosionPrefab: {fileID: 5275376150924568620, guid: 6a43c1d284fc61d468909dd70cc3bb7a,
+    type: 3}
+  _missilePrefab: {fileID: 7378566579827735836, guid: 85b09eaa755bcef4ab6361bce68191c8,
+    type: 3}
+  _pickUpCollectSpeed: 5
 --- !u!60 &1057090171250050081
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -498,6 +543,46 @@ PolygonCollider2D:
       - {x: -1.48, y: -2}
       - {x: -0.9, y: -1.51}
       - {x: -0.81, y: -1.43}
+--- !u!50 &219982748
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057090171250050077}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!95 &219982752
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057090171250050077}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e0c52c8552ee50e4cb197c98d1c29ffe, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &3449011375375971906
 PrefabInstance:
   m_ObjectHideFlags: 0

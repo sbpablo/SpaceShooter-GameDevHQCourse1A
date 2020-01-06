@@ -45,10 +45,8 @@ public class Missile : MonoBehaviour
     }
     void FixedUpdate()
     {
-
         _rb.velocity = transform.up * _speed;
-       
-
+      
     }
 
 
@@ -103,19 +101,27 @@ public class Missile : MonoBehaviour
 
         foreach( var enemy in enemies)
         {
-            if (enemy.gameObject.name != "EnemyContainer" && enemy.gameObject.name!="EnemyShield" && enemy.gameObject.GetComponent<Enemy>().IsbeingTargeted==false)
+            var enemyComponent = enemy.gameObject.GetComponent<Enemy>();
+
+            if (enemyComponent != null)
             {
-                var distance = Vector3.Distance(enemy.transform.position, currentPos);
-                if (distance < minDist)
+              
+                if ( enemyComponent.IsbeingTargeted == false)
                 {
-                    closestEnemy = enemy.transform;
-                    minDist = distance;
+                    var distance = Vector3.Distance(enemy.transform.position, currentPos);
+                    if (distance < minDist)
+                    {
+                        closestEnemy = enemy.transform;
+                        minDist = distance;
+                    }
                 }
-            }    
+            }
+
         }
         
-        if (closestEnemy != null)
+        if (closestEnemy != null && closestEnemy.gameObject.tag!="Boss")
         {
+            
             closestEnemy.transform.GetComponent<Enemy>().IsbeingTargeted = true;
         }
        
