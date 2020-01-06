@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 4332223543582043125}
   - component: {fileID: 4332223543582043122}
   - component: {fileID: 1572061801355689026}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AmmoPowerUp
-  m_TagString: Untagged
+  m_TagString: PowerUp
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -107,7 +107,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4332223543582043126}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -7565343190010465108}
   - component: {fileID: 2349807159651746909}
   - component: {fileID: -7865943319346292249}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: EnemyLaser
   m_TagString: EnemyLaser
   m_Icon: {fileID: 0}
@@ -132,4 +132,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8643859db783c3345ae6e934cec01922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 5
+  _speed: 8

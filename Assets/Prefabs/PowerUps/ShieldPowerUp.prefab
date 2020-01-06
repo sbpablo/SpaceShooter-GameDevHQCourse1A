@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 318568306442076531}
   - component: {fileID: 4728401413001789553}
   - component: {fileID: 4096834401334554346}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShieldPowerUp
-  m_TagString: Untagged
+  m_TagString: PowerUp
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -127,7 +127,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8828219780772601439}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0

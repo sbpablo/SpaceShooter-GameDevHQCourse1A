@@ -20,6 +20,8 @@ public class CameraShake : MonoBehaviour
 ;    }
     void Update()
     {
+     
+        
         if (!_isShaking) return;
         else
         {   

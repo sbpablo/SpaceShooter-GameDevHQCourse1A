@@ -5,6 +5,7 @@ using System;
 
 
 
+
 public class SpeedCoroutineParameters 
 {
     public float CurrentSpeed { get; set; }
@@ -24,7 +25,7 @@ public class Player : MonoBehaviour
     private float _speed = 10;
     private float _minimumSpeed;
     [SerializeField]
-    private float _speedMultiplier = 2;
+    private float _speedMultiplier = 1.5f;
     [SerializeField]
     private float _speedIncreasedRate = 2f;
     [SerializeField]
@@ -40,8 +41,6 @@ public class Player : MonoBehaviour
     private float _nextFire = 0.0f;
     [SerializeField]
     private int _lives = 3;
-    private Boundary _boundary;
-    private SpawnManager _spawnManager;
     [SerializeField]
     private GameObject _shieldPrefab;
     [SerializeField]
@@ -52,7 +51,6 @@ public class Player : MonoBehaviour
     private int _ammoCount;
     private int _score;
     private int _killCount = 0;
-    private UIManager _ui;
     private GameObject _leftEngine;
     private GameObject _rightEngine;
     [SerializeField]
@@ -60,43 +58,39 @@ public class Player : MonoBehaviour
     private AudioSource _laserAudioSource;
     private AudioSource _explosionAudioSource;
     private AudioSource _missileAudioSource;
+    private AudioSource _damageAudioSource;
+    private AudioSource _negativeMovementAudioSource;
+    private AudioSource _alarmSound;
     private CameraShake _cameraShake;
     [SerializeField]
     private GameObject _missilePrefab;
     private bool _thrusterBoost;
     private bool _CoolDownFinish = true;
     private SpeedCoroutineParameters _speedCoroutineParameters;
-    
-    void Awake()
+    private Animator _turnLeftAnimation;
+    private Animator _turnRightAnimation;
+    private Rigidbody2D _rb;
+    private bool _negativeMovement;
+    [SerializeField]
+    private float _pickUpCollectSpeed = 5;
+
+
+    private void OnEnable()
+    {
+        PowerUp.OnPowerUpOnScreen += PickupCollect;
+        Boss.SceneArriving += AlarmSound;
+    }
+
+    private void OnDisable()
+    {
+        PowerUp.OnPowerUpOnScreen -= PickupCollect;
+        Boss.SceneArriving -= AlarmSound;
+    }
+
+
+    void Start()
     {
         transform.position = new Vector3(0, 0, 0);
-
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
-
-        try
-        {
-            _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("SpawnManager", "NULL, cannot find SpawnManager");
-        }
-
-        try
-        {
-            _ui = GameObject.Find("UIManager").GetComponent<UIManager>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("UIManager", "NULL, cannot find UIManager");
-        }
 
         
         _leftEngine = transform.Find("LeftEngine").gameObject;
@@ -130,6 +124,35 @@ public class Player : MonoBehaviour
             throw new ArgumentNullException("AudioManager or Explosion Sound", "NULL, cannot find Audio Manager/ Clip");
         }
 
+
+        try
+        {
+            _damageAudioSource = GameObject.Find("AudioManager").transform.Find("DamageSound").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or Explosion Sound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
+        try
+        {
+            _negativeMovementAudioSource = GameObject.Find("AudioManager").transform.Find("NegativeMovementSound").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or NegativeMovementSound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
+
+        try
+        {
+            _alarmSound = GameObject.Find("AudioManager").transform.Find("AlarmSound").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or _alarmSound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
         try
         {
             _cameraShake = GameObject.FindWithTag("MainCamera").GetComponent<CameraShake>();
@@ -139,20 +162,41 @@ public class Player : MonoBehaviour
             throw new ArgumentNullException("MainCamera", "NULL, cannot find MainCamera");
         }
 
+       
+        
+        _turnLeftAnimation = GetComponent<Animator>();
+        
+        if (_turnLeftAnimation is null)
+        {
+            Debug.LogError("Player animator not found");
+        }
+
+        _turnRightAnimation = GetComponent<Animator>();
+
+        if (_turnLeftAnimation is null)
+        {
+            Debug.LogError("Player animator not found");
+        }
+
+
         _minimumSpeed = _speed;
+        _rb = GetComponent<Rigidbody2D>();
 
         _ammoCount = _maxAmmoCount;
-        _ui.ShowAmmoCount(_ammoCount);
-        _ui.GetSlider().minValue = _minimumSpeed;
-        _ui.GetSlider().maxValue = Mathf.Max(_speed * _speedMultiplier, _speed * _speedIncreasedRate);
-
-        
+        UIManager.Instance.ShowAmmoCount(_ammoCount,_maxAmmoCount );
+        UIManager.Instance.GetSlider().minValue = _minimumSpeed;
+        UIManager.Instance.GetSlider().maxValue = Mathf.Max(_speed * _speedMultiplier, _speed * _speedIncreasedRate);
 
     }
 
-    void Update()
+    
+    private void FixedUpdate()
     {
         CalculateMovement();
+    }
+    void Update()
+    {
+      
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFire && _ammoCount>0)
         {
@@ -161,7 +205,6 @@ public class Player : MonoBehaviour
             AmmoManagement();
            
         }
-
 
         if (!_isSpeedEnabled)
         {
@@ -188,7 +231,21 @@ public class Player : MonoBehaviour
             }
         }
 
-         _ui.ShowThruster(_speed);    
+         UIManager.Instance.ShowThruster(_speed);    
+    }
+
+
+    private void PickupCollect(Transform obj)
+    {
+        if (Input.GetKey(KeyCode.C))
+        {
+            var direction = this.transform.position - obj.transform.position;
+            direction.Normalize();
+            obj.transform.Translate(direction * _pickUpCollectSpeed* Time.deltaTime);
+        }
+        
+       
+
     }
     IEnumerator SpeedIncrease( SpeedCoroutineParameters parameters )
     {
@@ -227,33 +284,42 @@ public class Player : MonoBehaviour
     {
 
         var horizontalImput = Input.GetAxis("Horizontal");
+        _turnLeftAnimation.SetInteger("HorizontalInput",  Mathf.FloorToInt(horizontalImput));
+        _turnRightAnimation.SetInteger("HorizontalInput", Mathf.CeilToInt(horizontalImput));
         var verticalImput = Input.GetAxis("Vertical");
 
         var movement = new Vector3(horizontalImput, verticalImput, 0);
 
-        transform.Translate(movement * _speed * Time.deltaTime);
+        if (_negativeMovement)
+        {
+            movement *= -1;
+        }
+        
+        _rb.velocity = (movement * _speed);
+        
+        //_rb.MovePosition(transform.position + movement * _speed * Time.fixedDeltaTime );
 
         // El objeto puede moverse en el eje X Libremente. Si pasa del límite de la pantalla, debe salir por el otro lado.
 
         float restrictedX = transform.position.x;
 
 
-        if (transform.position.x <= _boundary.GetBottomCorner().x)
+        if (transform.position.x <= Boundary.Instance.GetBottomCorner().x)
         {
-            restrictedX = _boundary.GetTopCorner().x;
+            restrictedX = Boundary.Instance.GetTopCorner().x;
 
         }
-        else if (transform.position.x >= _boundary.GetTopCorner().x)
+        else if (transform.position.x >= Boundary.Instance.GetTopCorner().x)
         {
-            restrictedX = _boundary.GetBottomCorner().x;
+            restrictedX = Boundary.Instance.GetBottomCorner().x;
         }
 
         // El objeto se puede mover en el eje y hasta el limite inferior de la pantalla, sumando su volumen.  
         // Hacia arriba, solo llega hacia la mitad de la pantalla.
 
         var restrictedY = Mathf.Clamp(transform.position.y,
-                                     _boundary.GetBottomCorner().y + this.GetComponent<SpriteRenderer>().bounds.extents.y,
-                                      (_boundary.GetTopCorner().y + _boundary.GetBottomCorner().y) / 2);
+                                     Boundary.Instance.GetBottomCorner().y + this.GetComponent<SpriteRenderer>().bounds.extents.y,
+                                      (Boundary.Instance.GetTopCorner().y + Boundary.Instance.GetBottomCorner().y) / 2);
 
 
         // Posicion restringida considerando tambien el tamaño del objeto
@@ -263,7 +329,7 @@ public class Player : MonoBehaviour
 
         var restrectedPos = new Vector3(restrictedX, restrictedY);
 
-        transform.position = restrectedPos;
+        _rb.position = restrectedPos;
     }
 
     private void Fire()
@@ -272,12 +338,12 @@ public class Player : MonoBehaviour
         if (_isTripleShotEnabled == false && _areMissilesEnabled == false)
         {
             FireLaser();
-            _laserAudioSource.Play();
+            
 
         } else if (_isTripleShotEnabled==true)
         {
             FireTripleShot();
-            _laserAudioSource.Play();
+            
 
         } else
         
@@ -289,14 +355,44 @@ public class Player : MonoBehaviour
     private void FireLaser()
     {
         var offset = new Vector3(0, 1, 0);
-        Instantiate(_laserPrefab, transform.position + offset, Quaternion.identity);
+
+        var laser = PoolManager.Instance.RetrieveObjectFromPool(_laserPrefab.gameObject.tag);
+        
+        if (laser != null)
+        {
+            laser.transform.position = transform.position + offset;
+            laser.SetActive(true);
+            _laserAudioSource.Play();
+        }
+        
+   
+        //Instantiate(_laserPrefab, transform.position + offset, Quaternion.identity);
     }
 
     private void FireTripleShot()
     {
         var offset = new Vector3(0, 1, 0);
-        Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+
+        //Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+        var tripleShot= PoolManager.Instance.RetrieveObjectFromPool(_tripleShotPrefab.gameObject.tag);
+       
+        if (tripleShot != null)
+        {
+            
+            tripleShot.transform.position = transform.position;
+            
+            foreach (Transform child  in tripleShot.transform)
+            {
+                child.gameObject.SetActive(true);
+            } 
+            
+            tripleShot.SetActive(true);
+            _laserAudioSource.Play();
+            
+        }
     }
+        
+       
 
     private void FireMissiles()
     {
@@ -305,15 +401,15 @@ public class Player : MonoBehaviour
     public void AmmoManagement()
     {
         _ammoCount--;
-        _ui.ShowAmmoCount(_ammoCount);
+        UIManager.Instance.ShowAmmoCount(_ammoCount,_maxAmmoCount);
 
-        if (_ammoCount <= 5 && _ui.IsAmmoCoroutineActive == false)
+        if (_ammoCount <= 5 && UIManager.Instance.IsAmmoCoroutineActive == false)
         {
-            _ui.StartCoroutine("AmmoCountFlickering");
+            UIManager.Instance.StartCoroutine("AmmoCountFlickering");
         }
-        else if (_ammoCount > 5 && _ui.IsAmmoCoroutineActive == true)  // For inspector debugging.  AmmoPowerUP stops Routine.
+        else if (_ammoCount > 5 && UIManager.Instance.IsAmmoCoroutineActive == true)  // For inspector debugging.  AmmoPowerUP stops Routine.
         {
-            _ui.StopAmmoCoroutineSecuence();
+            UIManager.Instance.StopAmmoCoroutineSecuence();
         }
     }
 
@@ -324,7 +420,7 @@ public class Player : MonoBehaviour
 
             _cameraShake.Shake();
             _lives -= 1;
-            _ui.SetLivesImage(_lives);
+            UIManager.Instance.SetLivesImage(_lives);
 
             switch (_lives)
             {
@@ -338,8 +434,9 @@ public class Player : MonoBehaviour
                     {
                         _rightEngine.SetActive(true);
                     }
-                   
+                    _damageAudioSource.Play();
                      break;
+
                 case 1:
                     if (_leftEngine.activeSelf == true)
                     {
@@ -349,10 +446,11 @@ public class Player : MonoBehaviour
                     {
                         _leftEngine.SetActive(true);
                     }
+                    _damageAudioSource.Play();
                     break;
 
                 case 0:
-                    _spawnManager.OnPlayerDeath();
+                    SpawnManager.Instance.OnPlayerDeath();
                     _explosionPrefab = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
 
                     if (_explosionPrefab == null)
@@ -367,7 +465,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if (sourceOfDamage == "Enemy")   //The enemy ship destroys the shield completely.
+            if (sourceOfDamage == "Enemy" || sourceOfDamage =="Boss")   //The enemy ship or a boss destroys the shield completely.
             {
                 StopCoroutine("ShieldCoolDownRoutine");
                 _isShieldEnabled = false;
@@ -448,11 +546,25 @@ public class Player : MonoBehaviour
         _shieldPrefab.SetActive(false);
     }
 
+    public void OnNegativeMovementPowerUpCollection (float duration)
+    {
+        _negativeMovement = true;
+        _negativeMovementAudioSource.Play();
+        StartCoroutine(OnNegativeMovementCoolDownRoutine(duration));
+    }
+
+    IEnumerator OnNegativeMovementCoolDownRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        _negativeMovement = false;
+        _negativeMovementAudioSource.Stop();
+    }
+
     public void OnAmmoPowerUpCollection()
     {
         _ammoCount = _maxAmmoCount;
-        _ui.ShowAmmoCount(_ammoCount);
-        _ui.StopAmmoCoroutineSecuence();
+        UIManager.Instance.ShowAmmoCount(_ammoCount,_maxAmmoCount);
+        UIManager.Instance.StopAmmoCoroutineSecuence();
     }
     public void OnLifePowerUpCollection()
     {
@@ -460,7 +572,7 @@ public class Player : MonoBehaviour
         if (_lives <3)
         {
             _lives++;
-            _ui.SetLivesImage(_lives);
+            UIManager.Instance.SetLivesImage(_lives);
 
             if (_leftEngine.activeSelf == true)
             {
@@ -489,7 +601,7 @@ public class Player : MonoBehaviour
     {
         _killCount += 1;
         _score += score;
-        _ui.ShowScore(_score);
+        UIManager.Instance.ShowScore(_score);
     }
     public int GetScore()
     {
@@ -501,4 +613,16 @@ public class Player : MonoBehaviour
         return _ammoCount;
     }
 
+    public int GetLives()
+    {
+        return _lives;
+    }
+
+
+    private void AlarmSound()
+    {
+        _alarmSound.Play();
+        // _alarmSound.SetScheduledEndTime(5);
+        _alarmSound.SetScheduledEndTime(AudioSettings.dspTime + 6.5);
+    }
 }

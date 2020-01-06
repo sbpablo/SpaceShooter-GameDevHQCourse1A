@@ -10,7 +10,8 @@ public enum PowerUpType
     Shield,
     Ammo,
     Life,
-    Missile
+    Missile,
+    NegativeMovement,
 }
 
 public class PowerUp : MonoBehaviour
@@ -18,26 +19,20 @@ public class PowerUp : MonoBehaviour
 
     [SerializeField]
     private float _duration = 5.0f;
-    private Boundary _boundary;
     [SerializeField]
     private float _speed = 3;
     [SerializeField]
     private PowerUpType _type;
     private AudioSource _powerUpAudioSource;
+    private AudioSource _powerUpDestroyedAudioSource;
     [SerializeField]
     private float _spawnWeight;
+    public static event Action <Transform> OnPowerUpOnScreen;
+   
   
     void Start()
     {
-        try 
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
-
+       
 
         try
         {
@@ -48,14 +43,28 @@ public class PowerUp : MonoBehaviour
             throw new ArgumentNullException("AudioManager or PowerUp Sound", "NULL, cannot find Audio Manager/ Clip");
         }
 
+        try
+        {
+            _powerUpDestroyedAudioSource = GameObject.Find("AudioManager").transform.Find("PowerUpDestroyed").gameObject.GetComponent<AudioSource>();
+        }
+        catch (Exception)
+        {
+            throw new ArgumentNullException("AudioManager or PowerUpDestroyed Sound", "NULL, cannot find Audio Manager/ Clip");
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
+        
+        if (this.gameObject.tag!="NegativeMovement")
+        {
+            OnPowerUp();
+        }
 
-        if (transform.position.y<= _boundary.GetBottomCorner().y)
+        if (transform.position.y<= Boundary.Instance.GetBottomCorner().y)
         {
             Destroy(this.gameObject);
         }  
@@ -71,6 +80,31 @@ public class PowerUp : MonoBehaviour
         return _duration;
     }
 
+    private  void OnPowerUp()
+    {
+        if (OnPowerUpOnScreen != null)
+
+        {
+            OnPowerUpOnScreen(this.gameObject.transform);
+        }
+    }
+
+    private IEnumerator ScaleCoroutine()
+    {
+
+        _powerUpDestroyedAudioSource.Play();
+        
+        for (float i= transform.localScale.x; i>=0.0f; i-= 0.1f)
+        {
+            Debug.Log(transform.localScale);
+            transform.localScale -= new Vector3(0.1f,0.1f ,0.1f);
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        
+        Destroy(this.gameObject);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == ("Player"))
@@ -81,7 +115,12 @@ public class PowerUp : MonoBehaviour
             if (player != null)
             {
 
-                _powerUpAudioSource.Play();
+                if (gameObject.tag != "NegativeMovement")
+                {
+                    _powerUpAudioSource.Play();
+                }
+                
+                
 
                 switch ((int) this._type)
                 {
@@ -105,9 +144,20 @@ public class PowerUp : MonoBehaviour
                     case 5:
                         player.OnMissilePowerUpCollection(_duration);
                         break;
+                    case 6:
+                        player.OnNegativeMovementPowerUpCollection(_duration);
+                        break;
                 }
             }
             Destroy(this.gameObject);
+        }
+
+        if (collision.tag == "EnemyLaser")
+        {
+            this.GetComponent<Collider2D>().enabled = false;
+            StartCoroutine(ScaleCoroutine());
+            collision.gameObject.SetActive(false);
+
         }
     }
 }

@@ -9,12 +9,12 @@ public class Missile : MonoBehaviour
     private Transform _enemyContainer;
     private Transform _target;
     private bool _isTargetAquired;
-    private Rigidbody2D rb;
+    private Rigidbody2D _rb;
     [SerializeField]
     private float _angleChangingSpeed =15f;
     [SerializeField]
     private float _speed=5f;
-    private Boundary _boundary;
+    
     
     void Start()
     {
@@ -25,44 +25,35 @@ public class Missile : MonoBehaviour
             Debug.LogError("EnemyContainer could not be found");
         }
 
-        rb = GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody2D>();
 
-        if (rb == null)
+        if (_rb == null)
         {
             Debug.LogError("Rigidbody Component could not be found");
         }
 
         
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (System.Exception)
-        {
 
-            throw new ArgumentNullException("Boundary", "Boundary Manager could not be found");
-        }
-
-
-        _boundary.Offset = 5.0f;
+        Boundary.Instance.Offset = 5.0f;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+     void Update()
     {
-
-        rb.velocity = transform.up * _speed;
         _targets = _enemyContainer.GetComponentsInChildren<Transform>();
         FindAndFollowTarget(); //Finds and follow the closest enemy.
         OutOfBoundsActions();
-
+    }
+    void FixedUpdate()
+    {
+        _rb.velocity = transform.up * _speed;
+      
     }
 
 
     public void OutOfBoundsActions()
     {
-         if (transform.position.y > _boundary.GetTopCorner().y + _boundary.Offset || transform.position.y<_boundary.GetBottomCorner().y - _boundary.Offset ||
-             transform.position.x > _boundary.GetTopCorner().x + _boundary.Offset || transform.position.x<_boundary.GetBottomCorner().x - _boundary.Offset)
+         if (transform.position.y > Boundary.Instance.GetTopCorner().y + Boundary.Instance.Offset || transform.position.y<Boundary.Instance.GetBottomCorner().y - Boundary.Instance.Offset ||
+             transform.position.x > Boundary.Instance.GetTopCorner().x + Boundary.Instance.Offset || transform.position.x<Boundary.Instance.GetBottomCorner().x - Boundary.Instance.Offset)
          {
            
             if (_target != null)
@@ -93,7 +84,7 @@ public class Missile : MonoBehaviour
                 direction.Normalize();
                 float angle = Vector3.Angle(transform.up, direction);
                 float sign = Vector3.Cross(transform.up, direction).z;
-                rb.angularVelocity = angle * sign * _angleChangingSpeed;
+                _rb.angularVelocity = angle * sign * _angleChangingSpeed;
             }
             else
             {
@@ -110,19 +101,27 @@ public class Missile : MonoBehaviour
 
         foreach( var enemy in enemies)
         {
-            if (enemy.gameObject.name != "EnemyContainer" && enemy.gameObject.GetComponent<Enemy>().IsbeingTargeted==false)
+            var enemyComponent = enemy.gameObject.GetComponent<Enemy>();
+
+            if (enemyComponent != null)
             {
-                var distance = Vector3.Distance(enemy.transform.position, currentPos);
-                if (distance < minDist)
+              
+                if ( enemyComponent.IsbeingTargeted == false)
                 {
-                    closestEnemy = enemy.transform;
-                    minDist = distance;
+                    var distance = Vector3.Distance(enemy.transform.position, currentPos);
+                    if (distance < minDist)
+                    {
+                        closestEnemy = enemy.transform;
+                        minDist = distance;
+                    }
                 }
-            }    
+            }
+
         }
         
-        if (closestEnemy != null)
+        if (closestEnemy != null && closestEnemy.gameObject.tag!="Boss")
         {
+            
             closestEnemy.transform.GetComponent<Enemy>().IsbeingTargeted = true;
         }
        

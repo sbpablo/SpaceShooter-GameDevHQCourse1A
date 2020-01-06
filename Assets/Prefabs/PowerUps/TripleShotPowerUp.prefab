@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1114976888797835630}
   - component: {fileID: 1114976888797835618}
   - component: {fileID: 263130266}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TripleShotPowerUp
   m_TagString: TripleShotPowerUp
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1114976888797835631}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0

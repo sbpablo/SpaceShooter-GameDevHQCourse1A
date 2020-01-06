@@ -10,6 +10,12 @@ TagManager:
   - Asteroid
   - EnemyLaser
   - Missile
+  - RamEnemy
+  - TripleShotLaser
+  - NegativeMovement
+  - PowerUp
+  - Boss
+  - HealthSlider
   layers:
   - Default
   - TransparentFX
@@ -20,12 +26,12 @@ TagManager:
   - 
   - 
   - PostProccesing
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - RamEnemy
+  - PowerUps
+  - Laser
+  - Player
+  - Enemy
+  - EnemyLaser
   - 
   - 
   - 

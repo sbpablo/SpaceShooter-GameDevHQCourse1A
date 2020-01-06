@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-public class UIManager : MonoBehaviour
+public class UIManager : MonoSingleton <UIManager>
 {
     [SerializeField]
     private Text _score;
@@ -19,9 +19,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text _ammoText;
     [SerializeField]
-    private GameManager _gameManager;
-    [SerializeField]
     private Slider _speedSlider;
+    [SerializeField]
+    private Text _waveNumberText;
+    [SerializeField]
+    private Text _playerHasWonText;
     
     public bool IsAmmoCoroutineActive  { get; set; } 
 
@@ -33,22 +35,15 @@ public class UIManager : MonoBehaviour
         _livesUIImage.sprite = _livesSprites[3];
         _gameOverText.gameObject.SetActive(false);
         _restartText.gameObject.SetActive(false);
+        _playerHasWonText.gameObject.SetActive(false);
 
-        try
-        {
-            _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        }
-        catch (System.Exception)
-        {
-            throw new ArgumentNullException("Game Manager", "NULL, cannot find GameManager");
-        }
+       
 
     }
 
     public void ShowThruster (float speed)
     {
         _speedSlider.value = speed;
-
     }
          
     public void ShowScore (int score)
@@ -56,31 +51,47 @@ public class UIManager : MonoBehaviour
         _score.text = "Score: " + score;
         
     }
-    public void ShowAmmoCount (int ammo)
+    public void ShowAmmoCount (int ammo, int maxAmmo)
     {
-        _ammoText.text = $"Ammo: {ammo}";
+        _ammoText.text = $"Ammo: {ammo} / {maxAmmo}";
     }
 
     public void SetLivesImage(int lives)
     {
         _livesUIImage.sprite = _livesSprites[lives];
 
-        if (lives == 0)
+        if (lives == 0 && _restartText.IsActive()==false)  // if _restartText is Active, player has already won the game.
         {
-            GameOverSecuence();      
+            GameOverSecuence(false);      
         }
     }
 
-    public void GameOverSecuence()
+    public void GameOverSecuence(bool hasWon)
     {
-        _gameManager.GameOver();
-        StartCoroutine(GameOverFlickering());
+        GameManager.Instance.GameOver();
+
+        if (hasWon)
+        {
+            StartCoroutine(TextFlickering(_playerHasWonText));
+        }
+        else
+        {
+            StartCoroutine(TextFlickering(_gameOverText));
+        }
         ShowRestartMessage();   
     }
+
+   
+
     public void ShowGameOver()
     {
         _gameOverText.gameObject.SetActive(true);
         
+    }
+
+    public void ShowPlayerWin()
+    {
+        _playerHasWonText.gameObject.SetActive(true);
     }
 
     public void DisableGameOver()
@@ -95,19 +106,18 @@ public class UIManager : MonoBehaviour
 
     }
 
-    IEnumerator GameOverFlickering()
+    IEnumerator TextFlickering(Text text)
     {
        
        while (true)
         {
-            _gameOverText.gameObject.SetActive(!_gameOverText.gameObject.activeSelf);
+            text.gameObject.SetActive(!text.gameObject.activeSelf);
             yield return new WaitForSeconds(0.5f);
         }
             
         
     }
 
-      
     IEnumerator AmmoCountFlickering()
     {
 
@@ -117,13 +127,11 @@ public class UIManager : MonoBehaviour
         {
             _ammoText.gameObject.SetActive(!_ammoText.gameObject.activeSelf);
             yield return new  WaitForSeconds(0.5f);
-            
         }
 
     }
 
-
-  
+   
     public void EnableAmmoText()
     {
         _ammoText.gameObject.SetActive(true);
@@ -141,8 +149,37 @@ public class UIManager : MonoBehaviour
     {
         return _speedSlider;
     }
- }
+
+    public void ShowWave(int waveNumber) 
+    {
+        _waveNumberText.text= $"Level: {waveNumber}";
+    }
+
+    public void ShowWave(string message)
+    {
+        _waveNumberText.text = "";
+    }
 
 
-   
+    IEnumerator ShowWaveFlickeringSecuence(int waveNumber)
+    {
+        
+        ShowWave(waveNumber);
+        yield return new WaitForSeconds(0.4f);
+        ShowWave("");
+        yield return new WaitForSeconds(0.4f);
+        ShowWave(waveNumber);
+        yield return new WaitForSeconds(0.4f);
+        ShowWave("");
+        yield return new WaitForSeconds(0.4f);
+        ShowWave(waveNumber);
+        yield return new WaitForSeconds(0.4f);
+        ShowWave("");
+
+    }
+
+}
+
+
+
 

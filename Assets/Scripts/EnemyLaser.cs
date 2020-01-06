@@ -7,22 +7,14 @@ public class EnemyLaser : MonoBehaviour
 {
     [SerializeField]
     private float _speed=10;
-    private Boundary _boundary;
     private Player _player;
+
+
+    
     void Start()
     {
 
-        _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-
-        try
-        {
-            _boundary = GameObject.Find("BoundaryManager").GetComponent<Boundary>();
-        }
-        catch (Exception)
-        {
-            throw new ArgumentNullException("BoundaryManager", "NULL, cannot find BoundaryManager");
-        }
-
+       
         try
         {
             _player = GameObject.Find("Player").GetComponent<Player>();
@@ -35,12 +27,13 @@ public class EnemyLaser : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.up * _speed * Time.deltaTime);
+        transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
-        if (transform.position.x < _boundary.GetBottomCorner().x || transform.position.x > _boundary.GetTopCorner().x ||
-            transform.position.y < _boundary.GetBottomCorner().y || transform.position.y > _boundary.GetTopCorner().y )
+        if (transform.position.x < Boundary.Instance.GetBottomCorner().x || transform.position.x > Boundary.Instance.GetTopCorner().x ||
+            transform.position.y < Boundary.Instance.GetBottomCorner().y || transform.position.y > Boundary.Instance.GetTopCorner().y )
         {
-            Destroy(this.gameObject);
+            // Destroy(this.gameObject);
+            this.gameObject.SetActive(false);
         }   
     }
 
@@ -49,7 +42,8 @@ public class EnemyLaser : MonoBehaviour
         if (collision.tag == "Player")
         {
             _player.Damage(this.gameObject.tag);
-            Destroy(this.gameObject);
+            //Destroy(this.gameObject);
+            this.gameObject.SetActive(false);
         }
     }
 }
